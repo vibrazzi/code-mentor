@@ -51,7 +51,7 @@ if STATIC_DIR.exists():
 templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
 
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434/api/generate")
-OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.2:3b")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.2")
 
 PROMPT_SISTEMA = """Você é o CodeMentor, um experiente mentor de lógica de programação.
 

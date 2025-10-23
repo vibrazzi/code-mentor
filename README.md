@@ -23,7 +23,7 @@ CodeMentor é um assistente especializado em lógica de programação, construí
 ## Visão Geral
 
 - **Objetivo:** oferecer mentoria de lógica de programação em português, com explicações graduais, exemplos em Python e analogias acessíveis.
-- **Modelo base:** `llama3.2:3b` (ou qualquer modelo disponível no Ollama).
+- **Modelo base:** `llama3.2` (ou qualquer modelo disponível no Ollama).
 - **Stack principal:** FastAPI · Jinja2 · Vanilla JS · CSS customizado.
 
 ---
@@ -63,7 +63,7 @@ code-mentor/
 
 - Python **3.12** ou superior
 - [Ollama](https://ollama.com) instalado e operando (`ollama serve`)
-- Modelo baixado localmente (`ollama pull llama3.2:3b`) ou endpoint remoto compatível
+- Modelo baixado localmente (`ollama pull llama3.2`) ou endpoint remoto compatível
 - Docker (opcional) para build e deploy containerizado
 
 ---
@@ -78,7 +78,7 @@ python -m venv .venv
 source .venv/bin/activate   # Windows: .venv\Scripts\activate
 
 pip install -r requirements.txt
-ollama pull llama3.2:3b     # execute apenas na primeira vez
+ollama pull llama3.2     # execute apenas na primeira vez
 
 uvicorn main:app --reload
 ```
@@ -93,7 +93,7 @@ Abra `http://127.0.0.1:8000` para iniciar a sessão com o mentor.
 docker build -t codementor .
 docker run --rm \
   -e OLLAMA_URL=http://host.docker.internal:11434/api/generate \
-  -e OLLAMA_MODEL=llama3.2:3b \
+  -e OLLAMA_MODEL=llama3.2 \
   -p 8000:8000 codementor
 ```
 
@@ -106,10 +106,10 @@ docker run --rm \
 1. Empurre o repositório para o GitHub.
 2. No Railway, crie um projeto usando **Deploy from GitHub repo** para o serviço FastAPI.
 3. Crie um segundo serviço dedicado ao Ollama (pode usar a imagem `ollama/ollama:latest`) e adicione um volume persistente para armazenar os modelos.
-4. No serviço do Ollama, rode `ollama pull llama3.2:3b` uma única vez e mantenha `ollama serve` em execução.
+4. No serviço do Ollama, rode `ollama pull llama3.2` uma única vez e mantenha `ollama serve` em execução.
 5. No serviço FastAPI, defina as variáveis de ambiente:
    - `OLLAMA_URL=http://<nome-do-servico-ollama>:11434/api/generate`
-   - `OLLAMA_MODEL=llama3.2:3b`
+   - `OLLAMA_MODEL=llama3.2`
    - `REQUEST_TIMEOUT_SECONDS=60` (opcional)
 6. Dispare o deploy; o container FastAPI agora fica leve (apenas a aplicação). Para provedores externos (Hugging Face, Groq, OpenRouter), basta apontar `OLLAMA_URL` para o endpoint correspondente.
 
@@ -120,7 +120,7 @@ docker run --rm \
 | Variável | Padrão | Descrição |
 |----------|--------|-----------|
 | `OLLAMA_URL` | `http://localhost:11434/api/generate` | Endpoint da API do Ollama. |
-| `OLLAMA_MODEL` | `llama3.2:3b` | Identificador do modelo a ser utilizado. |
+| `OLLAMA_MODEL` | `llama3.2` | Identificador do modelo a ser utilizado. |
 | `REQUEST_TIMEOUT_SECONDS` | `60` | Timeout (segundos) das requisições ao Ollama. |
 
 Defina estas variáveis antes de iniciar o servidor (local ou produção). Exemplo:
