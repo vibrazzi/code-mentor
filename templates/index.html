@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CodeMentor • Mentor de Lógica de Programação</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='css/styles.css') }}">
+    <script defer src="{{ url_for('static', path='js/app.js') }}"></script>
+</head>
+<body>
+    <div class="layout">
+        <nav class="topbar" aria-label="Navegação principal">
+            <div class="topbar__brand">
+                <span class="topbar__logo" aria-hidden="true">🦾</span>
+                <div>
+                    <p class="topbar__label">CodeMentor</p>
+                    <span class="topbar__tagline">Com IA focada em lógica</span>
+                </div>
+            </div>
+            <div class="topbar__actions">
+                <span class="topbar__status">
+                    <span class="status-dot" aria-hidden="true"></span>
+                    Online
+                </span>
+                <a
+                    class="topbar__button"
+                    href="https://github.com/vibrazzi/code-mentor"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    Ver no GitHub
+                </a>
+            </div>
+        </nav>
+
+        <header class="hero">
+            <div class="hero__content">
+                <h1 class="hero__title">Aprenda lógica de programação com o CodeMentor</h1>
+                <p class="hero__subtitle">
+                    Tire dúvidas, explore algoritmos e receba exemplos comentados em Python com um mentor paciente,
+                    pronto para acompanhar o seu ritmo de estudo.
+                </p>
+                <div class="hero__tags">
+                    <span class="tag">Variáveis</span>
+                    <span class="tag">Estruturas de controle</span>
+                    <span class="tag">Funções e recursão</span>
+                    <span class="tag">Depuração</span>
+                </div>
+            </div>
+            <div class="hero__status">
+                <span class="status-dot" aria-hidden="true"></span>
+                <span class="status-label">Disponível 24/7</span>
+            </div>
+            <div class="hero__stats" role="list">
+                <div class="hero__stat" role="listitem">
+                    <span class="hero__stat-value">+120</span>
+                    <span class="hero__stat-label">Conceitos cobertos</span>
+                </div>
+                <div class="hero__stat" role="listitem">
+                    <span class="hero__stat-value">♾️</span>
+                    <span class="hero__stat-label">Explicações sob medida</span>
+                </div>
+                <div class="hero__stat" role="listitem">
+                    <span class="hero__stat-value">PT-BR</span>
+                    <span class="hero__stat-label">Conteúdo acessível</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="main">
+            <section class="chat-card" aria-labelledby="chat-title">
+                <header class="chat-card__header">
+                    <div class="chat-card__info">
+                        <span class="chat-card__logo" aria-hidden="true">🦾</span>
+                        <div>
+                            <h2 id="chat-title">CodeMentor</h2>
+                            <p class="chat-card__subtitle">Mentor de lógica de programação</p>
+                        </div>
+                    </div>
+                    <button class="chat-card__pill" type="button" disabled>Modelo {{ OLLAMA_MODEL }}</button>
+                </header>
+
+                <div class="chat-card__body">
+                    <div class="message-list" id="chatMessages" aria-live="polite">
+                        <div class="chat-message chat-message--assistant">
+                            <div class="chat-message__avatar" aria-hidden="true">🤖</div>
+                            <div class="chat-message__content">
+                                <p>
+                                    Olá! 👋 Sou o CodeMentor, seu mentor para aprender lógica de programação.<br><br>
+                                    Posso explicar conceitos, mostrar exemplos em Python e sugerir exercícios para você praticar.<br><br>
+                                    O que você gostaria de explorar hoje?
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="typing-indicator" id="typingIndicator" role="status" aria-live="polite">
+                        <span class="typing-indicator__dot"></span>
+                        <span class="typing-indicator__dot"></span>
+                        <span class="typing-indicator__dot"></span>
+                        <span class="typing-indicator__label">Ensinar…</span>
+                    </div>
+                </div>
+
+                <form id="chatForm" class="chat-form" autocomplete="off">
+                    <label class="visually-hidden" for="userInput">Digite sua pergunta</label>
+                    <input
+                        id="userInput"
+                        name="message"
+                        class="chat-form__input"
+                        placeholder="Pergunte sobre lógica, algoritmos ou exemplos em Python…"
+                        maxlength="500"
+                        required
+                    >
+                    <button id="sendButton" class="chat-form__button" type="submit" disabled>
+                        Enviar
+                        <span aria-hidden="true">📤</span>
+                    </button>
+                </form>
+
+                <section class="suggestions" aria-label="Sugestões de perguntas">
+                    <h3 class="suggestions__title">Sugestões rápidas</h3>
+                    <div class="suggestions__list">
+                        <button class="suggestions__item" type="button" data-example="O que é uma variável?">
+                            O que é uma variável?
+                        </button>
+                        <button class="suggestions__item" type="button" data-example="Como funciona um loop for em Python?">
+                            Como funciona um loop <code>for</code>?
+                        </button>
+                        <button class="suggestions__item" type="button" data-example="Pode explicar recursão com um exemplo?">
+                            Explique recursão com exemplo
+                        </button>
+                        <button class="suggestions__item" type="button" data-example="Como ordenar uma lista de números usando Python?">
+                            Como ordenar uma lista?
+                        </button>
+                        <button class="suggestions__item" type="button" data-example="O que são funções lambda e quando usar?">
+                            Para que servem funções <code>lambda</code>?
+                        </button>
+                    </div>
+                </section>
+            </section>
+
+            <aside class="sidebar">
+                <div class="sidebar__card">
+                    <h3>O que o mentor faz?</h3>
+                    <ul class="feature-list">
+                        <li>Explica conceitos passo a passo com linguagem acessível.</li>
+                        <li>Mostra exemplos em Python, prontos para você executar.</li>
+                        <li>Dá feedback gentil sobre seu raciocínio e aponta próximos passos.</li>
+                        <li>Sugere exercícios para fixar o aprendizado.</li>
+                    </ul>
+                </div>
+                <div class="sidebar__card">
+                    <h3>Como funciona?</h3>
+                    <ol class="steps">
+                        <li>Envie sua dúvida ou escolha uma sugestão.</li>
+                        <li>Receba uma explicação objetiva com exemplos.</li>
+                        <li>Pratique com as dicas e volte quando quiser.</li>
+                    </ol>
+                </div>
+                <div class="sidebar__card sidebar__card--accent">
+                    <h3>Próximos passos recomendados</h3>
+                    <ul class="checklist">
+                        <li>Revise condicionais com pequenos desafios.</li>
+                        <li>Construa um algoritmo de ordenação simples.</li>
+                        <li>Experimente recursão com o fatorial.</li>
+                        <li>Compartilhe seu progresso com colegas.</li>
+                    </ul>
+                </div>
+            </aside>
+        </main>
+
+        <footer class="footer">
+            <p class="footer__note">Feito por <code>Webert Fernandes</code> ❤️‍🔥 •  FastAPI + Ollama</p>
+        </footer>
+    </div>
+</body>
+</html>
