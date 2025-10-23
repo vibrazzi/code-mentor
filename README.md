@@ -91,29 +91,27 @@ Abra `http://127.0.0.1:8000` para iniciar a sessão com o mentor.
 
 ```bash
 docker build -t codementor .
-docker run --rm -p 8000:8000 codementor
+docker run --rm \
+  -e OLLAMA_URL=http://host.docker.internal:11434/api/generate \
+  -e OLLAMA_MODEL=llama3.2:3b \
+  -p 8000:8000 codementor
 ```
 
-O Dockerfile instala o Ollama e realiza o `ollama pull` durante o build. A primeira compilação pode levar alguns minutos (download do modelo).
+> O container não inclui o Ollama. Execute `ollama serve` e `ollama pull <modelo>` no host e exponha a porta 11434. Em macOS/Windows use `host.docker.internal`; em Linux utilize o IP da máquina anfitriã ou uma rede Docker customizada.
 
 ---
 
 ## Deploy no Railway
 
 1. Empurre o repositório para o GitHub.
-2. No Railway, crie um projeto usando **Deploy from GitHub repo**.
-3. Garanta que o plano contratado oferece CPU/RAM suficientes para o modelo escolhido.
-4. O `railway.json` já define o comando de inicialização:
-
-   ```json
-   {
-     "startCommand": "sh -c 'ollama serve & sleep 5 && uvicorn main:app --host 0.0.0.0 --port 8000'"
-   }
-   ```
-
-5. Configure as variáveis de ambiente conforme necessário (veja abaixo).
-
-> Se preferir terceirizar a inferência (Hugging Face Inference, Groq, OpenRouter), basta apontar `OLLAMA_URL` para o novo endpoint.
+2. No Railway, crie um projeto usando **Deploy from GitHub repo** para o serviço FastAPI.
+3. Crie um segundo serviço dedicado ao Ollama (pode usar a imagem `ollama/ollama:latest`) e adicione um volume persistente para armazenar os modelos.
+4. No serviço do Ollama, rode `ollama pull llama3.2:3b` uma única vez e mantenha `ollama serve` em execução.
+5. No serviço FastAPI, defina as variáveis de ambiente:
+   - `OLLAMA_URL=http://<nome-do-servico-ollama>:11434/api/generate`
+   - `OLLAMA_MODEL=llama3.2:3b`
+   - `REQUEST_TIMEOUT_SECONDS=60` (opcional)
+6. Dispare o deploy; o container FastAPI agora fica leve (apenas a aplicação). Para provedores externos (Hugging Face, Groq, OpenRouter), basta apontar `OLLAMA_URL` para o endpoint correspondente.
 
 ---
 
