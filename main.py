@@ -156,9 +156,10 @@ def _call_ollama(prompt: str) -> str:
         ) from exc
 
     if response.status_code != 200:
+        error_detail = response.text
         raise HTTPException(
             status_code=502,
-            detail=f"Ollama retornou status {response.status_code}",
+            detail=f"Ollama retornou status {response.status_code}: {error_detail}",
         )
 
     try:
