@@ -7,7 +7,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     procps \
     && rm -rf /var/lib/apt/lists/*
-RUN curl -fsSL https://ollama.ai/install.sh | sh
+RUN curl --retry 5 --retry-delay 5 -fsSL https://ollama.ai/install.sh -o /tmp/install.sh \
+    && chmod +x /tmp/install.sh \
+    && /bin/bash /tmp/install.sh
 WORKDIR /app
 COPY requirements.txt .
 RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
