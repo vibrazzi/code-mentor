@@ -13,6 +13,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field, validator
+from starlette.middleware.base import BaseHTTPMiddleware
 
 APP_TITLE = "CodeMentor"
 APP_DESCRIPTION = "Mentor de lógica de programação impulsionado por modelos Ollama."
@@ -21,7 +22,28 @@ BASE_DIR = Path(__file__).resolve().parent
 STATIC_DIR = BASE_DIR / "static"
 TEMPLATES_DIR = BASE_DIR / "templates"
 
+class ForwardedProtoMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        proto = request.headers.get("x-forwarded-proto")
+        if proto:
+            request.scope["scheme"] = proto
+
+        host = request.headers.get("x-forwarded-host")
+        if host:
+            if ":" in host:
+                host_name, port = host.rsplit(":", 1)
+                try:
+                    request.scope["server"] = (host_name, int(port))
+                except ValueError:
+                    request.scope["server"] = (host, request.scope["server"][1])
+            else:
+                request.scope["server"] = (host, request.scope["server"][1])
+
+        return await call_next(request)
+
+
 app = FastAPI(title=APP_TITLE, description=APP_DESCRIPTION)
+app.add_middleware(ForwardedProtoMiddleware)
 
 if STATIC_DIR.exists():
     app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
