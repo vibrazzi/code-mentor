@@ -151,7 +151,7 @@ def _call_ollama(prompt: str, max_retries: int = 2) -> str:
                 json=payload,
                 timeout=REQUEST_TIMEOUT_SECONDS,
             )
-            
+
             if response.status_code != 200:
                 error_detail = response.text
                 raise HTTPException(
@@ -168,7 +168,7 @@ def _call_ollama(prompt: str, max_retries: int = 2) -> str:
                 )
 
             return answer.strip()
-            
+
         except requests.Timeout as exc:
             last_exception = exc
             if attempt < max_retries:
@@ -177,7 +177,7 @@ def _call_ollama(prompt: str, max_retries: int = 2) -> str:
                 status_code=504,
                 detail=f"Timeout ao conectar com Ollama após {max_retries + 1} tentativas (limite: {REQUEST_TIMEOUT_SECONDS}s)",
             ) from exc
-            
+
         except requests.ConnectionError as exc:
             last_exception = exc
             if attempt < max_retries:
@@ -186,7 +186,7 @@ def _call_ollama(prompt: str, max_retries: int = 2) -> str:
                 status_code=503,
                 detail=f"Erro de conexão com Ollama: serviço pode estar iniciando. URL: {OLLAMA_URL}",
             ) from exc
-            
+
         except requests.RequestException as exc:
             last_exception = exc
             if attempt < max_retries:
@@ -195,20 +195,19 @@ def _call_ollama(prompt: str, max_retries: int = 2) -> str:
                 status_code=503,
                 detail=f"Erro ao conectar com Ollama: {exc}",
             ) from exc
-            
+
         except json.JSONDecodeError as exc:
             raise HTTPException(
                 status_code=502,
                 detail="Resposta inválida do Ollama (JSON malformado).",
             ) from exc
-            
-    # Fallback se algo inesperado acontecer
+
     if last_exception:
         raise HTTPException(
             status_code=503,
             detail=f"Falha após {max_retries + 1} tentativas: {last_exception}",
         ) from last_exception
-    
+
     raise HTTPException(status_code=500, detail="Erro desconhecido ao chamar Ollama")
 
 
