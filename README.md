@@ -1,40 +1,43 @@
 # CodeMentor · IA para Lógica de Programação
 
-CodeMentor é um assistente especializado em lógica de programação, construído com FastAPI e alimentado por modelos hospedados no Ollama. O projeto foi pensado para portfólios profissionais: interface moderna, backend resiliente, testes automatizados e pipeline de deploy via Docker/Railway.
+CodeMentor é um assistente especializado em lógica de programação, construído com FastAPI e alimentado por **Groq API** (llama-3.1-8b-instant) ou Ollama local. O projeto foi pensado para portfólios profissionais: interface moderna, backend resiliente, respostas ultra-rápidas (~300ms) e pipeline de deploy via Railway.
 
 ---
 
 ## Sumário
+
 1. [Visão Geral](#visão-geral)
 2. [Principais Recursos](#principais-recursos)
 3. [Arquitetura](#arquitetura)
 4. [Pré-requisitos](#pré-requisitos)
 5. [Execução Local](#execução-local)
-6. [Execução com Docker](#execução-com-docker)
-7. [Deploy no Railway](#deploy-no-railway)
-8. [Configuração por Ambiente](#configuração-por-ambiente)
-9. [Testes e Qualidade](#testes-e-qualidade)
-10. [Personalização](#personalização)
-11. [Próximos Passos](#próximos-passos)
-12. [Licença](#licença)
+6. [Deploy no Railway](#deploy-no-railway)
+7. [Configuração por Ambiente](#configuração-por-ambiente)
+8. [Testes e Qualidade](#testes-e-qualidade)
+9. [Personalização](#personalização)
+10. [Próximos Passos](#próximos-passos)
+11. [Licença](#licença)
 
 ---
 
 ## Visão Geral
 
 - **Objetivo:** oferecer mentoria de lógica de programação em português, com explicações graduais, exemplos em Python e analogias acessíveis.
-- **Modelo base:** `llama3.2:3b` (ou qualquer modelo disponível no Ollama).
-- **Stack principal:** FastAPI · Jinja2 · Vanilla JS · CSS customizado.
+- **Modelo base:** `llama-3.1-8b-instant` via **Groq API** (padrão) ou `llama3.2:3b` via Ollama local.
+- **Stack principal:** FastAPI · Groq API · Jinja2 · Vanilla JS · CSS customizado.
+- **Performance:** Respostas em **~300-500ms** com Groq (vs 10-30s com Ollama local em CPU).
 
 ---
 
 ## Principais Recursos
 
-- **Respostas estruturadas:** reconhecimento do problema, teoria resumida, exemplo em Python, convite à prática e oferta de apoio adicional.
-- **Conversas com contexto:** histórico recente enviado ao modelo para manter coerência.
-- **Interface responsiva:** layout futurista, sugestões rápidas, indicador de digitação e acessibilidade (ARIA/live regions).
-- **Resiliência:** tratamento de erros da API do Ollama, health check dedicado e validação via Pydantic.
-- **Pronto para produção:** Dockerfile otimizado, configuração Railway e suite de testes automatizados.
+- **⚡ Ultra-rápido:** Groq API com hardware dedicado entrega respostas em milissegundos
+- **Respostas estruturadas:** reconhecimento do problema, teoria resumida, exemplo em Python, convite à prática
+- **Conversas com contexto:** histórico recente para manter coerência
+- **Interface responsiva:** layout futurista, sugestões rápidas, indicador de digitação e acessibilidade (ARIA)
+- **Dual provider:** suporta Groq API (recomendado) ou Ollama local como fallback
+- **Resiliência:** retry logic, tratamento de erros e validação via Pydantic
+- **Pronto para produção:** Deploy no Railway em minutos
 
 ---
 
@@ -103,39 +106,104 @@ docker run --rm \
 
 ## Deploy no Railway
 
-1. Empurre o repositório para o GitHub.
-2. No Railway, crie um projeto usando **Deploy from GitHub repo** para o serviço FastAPI.
-3. Crie um segundo serviço dedicado ao Ollama apontando para o Dockerfile `deploy/ollama/Dockerfile` deste repositório (o build já garante o download automático do modelo configurado).
-4. O serviço utiliza o script `deploy/ollama/entrypoint.sh`, que baixa o modelo indicado em `OLLAMA_MODEL` na primeira inicialização e inicia o `ollama serve` automaticamente.
-5. No serviço FastAPI, defina as variáveis de ambiente:
-   - `OLLAMA_URL=http://<nome-do-servico-ollama>:11434/api/generate`
-   - `OLLAMA_MODEL=llama3.2:3b`
-   - `REQUEST_TIMEOUT_SECONDS=60` (opcional)
-6. Dispare o deploy; o container FastAPI agora fica leve (apenas a aplicação). Para provedores externos (Hugging Face, Groq, OpenRouter), basta apontar `OLLAMA_URL` para o endpoint correspondente.
+### ⚡ Opção 1: Com Groq API (Recomendado - Ultra Rápido)
 
-> **Dica:** se você quiser trocar o modelo padrão, ajuste `OLLAMA_MODEL` ao buildar a imagem (ou sobrescreva a variável no Railway). O entrypoint garante que o modelo seja baixado somente quando estiver ausente no volume persistente.
+1. **Obtenha uma API Key da Groq:**
+
+   - Acesse: https://console.groq.com/
+   - Faça login e crie uma API Key gratuita
+   - Copie a chave (começa com `gsk_...`)
+
+2. **Deploy no Railway:**
+
+   - Empurre o repositório para o GitHub
+   - No Railway, crie um projeto usando **Deploy from GitHub repo**
+   - Adicione as variáveis de ambiente:
+     ```
+     LLM_PROVIDER=groq
+     LLM_API_KEY=gsk_sua_chave_aqui
+     LLM_MODEL=llama-3.1-8b-instant
+     LLM_API_URL=https://api.groq.com/openai/v1/chat/completions
+     LLM_MAX_TOKENS=800
+     ```
+
+3. **Pronto!** ✨
+   - Deploy automático em 1-2 minutos
+   - Respostas em ~300-500ms
+   - Plano gratuito: 14,400 requests/dia
+   - Custo zero de infraestrutura
+
+### 🔧 Opção 2: Com Ollama Local (Fallback)
+
+1. Crie dois serviços no Railway:
+
+   - **Serviço 1:** FastAPI (este repositório)
+   - **Serviço 2:** Ollama dedicado (usando `deploy/ollama/Dockerfile`)
+
+2. Configure as variáveis no serviço FastAPI:
+
+   ```
+   LLM_PROVIDER=ollama
+   OLLAMA_URL=http://<nome-do-servico-ollama>:11434/api/generate
+   OLLAMA_MODEL=llama3.2:3b
+   ```
+
+3. O Ollama usa o script `deploy/ollama/entrypoint.sh` que:
+   - Baixa o modelo automaticamente na primeira inicialização
+   - Usa volume persistente para armazenar o modelo
+   - Inicia o `ollama serve` automaticamente
+
+> **Nota:** Ollama em CPU no Railway é ~60-100x mais lento que Groq (~15-30s vs 0.3-0.5s)
 
 ---
 
 ## Configuração por Ambiente
 
-| Variável | Padrão | Descrição |
-|----------|--------|-----------|
-| `OLLAMA_URL` | `http://localhost:11434/api/generate` | Endpoint da API do Ollama. |
-| `OLLAMA_MODEL` | `llama3.2:3b` | Identificador do modelo a ser utilizado. |
-| `REQUEST_TIMEOUT_SECONDS` | `120` | Timeout (segundos) das requisições ao Ollama. |
-| `OLLAMA_TEMPERATURE` | `0.7` | Controle de criatividade; reduza para respostas mais objetivas. |
-| `OLLAMA_TOP_P` | `0.9` | Nucleus sampling; menores valores geram respostas mais conservadoras. |
-| `OLLAMA_NUM_PREDICT` | `256` | Limite de tokens gerados (quanto menor, mais rápido responde). |
-| `OLLAMA_NUM_CTX` | `1536` | Tamanho do contexto enviado ao modelo (reduza para economizar memória). |
-| `OLLAMA_NUM_THREAD` | `8` | Threads de inferência; ajuste conforme CPU disponível. |
-| `OLLAMA_NUM_BATCH` | `512` | Tamanho do batch interno; diminua se houver gargalo de memória. |
+### Variáveis Groq API (Recomendado)
 
-Defina estas variáveis antes de iniciar o servidor (local ou produção). Exemplo:
+| Variável          | Padrão                                            | Descrição                                                                              |
+| ----------------- | ------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `LLM_PROVIDER`    | `ollama`                                          | Provider: `groq` (recomendado) ou `ollama`                                             |
+| `LLM_API_KEY`     | -                                                 | **Obrigatório para Groq** - API Key da Groq Console                                    |
+| `LLM_API_URL`     | `https://api.groq.com/openai/v1/chat/completions` | Endpoint da Groq API                                                                   |
+| `LLM_MODEL`       | `llama-3.1-8b-instant`                            | Modelo Groq: `llama-3.1-8b-instant`, `llama-3.1-70b-versatile` ou `mixtral-8x7b-32768` |
+| `LLM_MAX_TOKENS`  | `800`                                             | Limite de tokens por resposta (50-2000)                                                |
+| `LLM_TEMPERATURE` | `0.7`                                             | Criatividade: 0.0 (conservador) - 2.0 (criativo)                                       |
+| `LLM_TOP_P`       | `0.9`                                             | Nucleus sampling (0.0-1.0)                                                             |
+
+### Variáveis Ollama Local (Fallback)
+
+| Variável             | Padrão                                | Descrição                               |
+| -------------------- | ------------------------------------- | --------------------------------------- |
+| `OLLAMA_URL`         | `http://localhost:11434/api/generate` | Endpoint da API do Ollama               |
+| `OLLAMA_MODEL`       | `llama3.2:3b`                         | Identificador do modelo                 |
+| `OLLAMA_NUM_PREDICT` | `150`                                 | Limite de tokens gerados                |
+| `OLLAMA_NUM_CTX`     | `512`                                 | Tamanho do contexto                     |
+| `OLLAMA_NUM_THREAD`  | `8`                                   | Threads de inferência (ajuste para CPU) |
+| `OLLAMA_NUM_BATCH`   | `512`                                 | Batch size interno                      |
+| `OLLAMA_TEMPERATURE` | `0.7`                                 | Controle de criatividade                |
+| `OLLAMA_TOP_P`       | `0.9`                                 | Nucleus sampling                        |
+
+### Variáveis Gerais
+
+| Variável                  | Padrão | Descrição                          |
+| ------------------------- | ------ | ---------------------------------- |
+| `REQUEST_TIMEOUT_SECONDS` | `60`   | Timeout das requisições (segundos) |
+
+**Exemplo Groq:**
 
 ```bash
-export OLLAMA_MODEL="llama3.1:8b"
-export OLLAMA_URL="http://ollama-service:11434/api/generate"
+export LLM_PROVIDER="groq"
+export LLM_API_KEY="gsk_..."
+export LLM_MODEL="llama-3.1-8b-instant"
+uvicorn main:app
+```
+
+**Exemplo Ollama:**
+
+```bash
+export LLM_PROVIDER="ollama"
+export OLLAMA_URL="http://localhost:11434/api/generate"
 uvicorn main:app
 ```
 
@@ -149,6 +217,7 @@ python -m unittest discover -s tests
 ```
 
 Os testes atuais validam:
+
 - Renderização da homepage
 - Fluxo feliz do endpoint `/api/chat` (mockando o Ollama)
 - Regras de validação (payload vazio → HTTP 422)
