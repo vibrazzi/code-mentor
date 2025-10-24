@@ -105,13 +105,15 @@ docker run --rm \
 
 1. Empurre o repositório para o GitHub.
 2. No Railway, crie um projeto usando **Deploy from GitHub repo** para o serviço FastAPI.
-3. Crie um segundo serviço dedicado ao Ollama (pode usar a imagem `ollama/ollama:latest`) e adicione um volume persistente para armazenar os modelos.
-4. No serviço do Ollama, rode `ollama pull llama3.2:3b` uma única vez e mantenha `ollama serve` em execução.
+3. Crie um segundo serviço dedicado ao Ollama apontando para o Dockerfile `deploy/ollama/Dockerfile` deste repositório (o build já garante o download automático do modelo configurado).
+4. O serviço utiliza o script `deploy/ollama/entrypoint.sh`, que baixa o modelo indicado em `OLLAMA_MODEL` na primeira inicialização e inicia o `ollama serve` automaticamente.
 5. No serviço FastAPI, defina as variáveis de ambiente:
    - `OLLAMA_URL=http://<nome-do-servico-ollama>:11434/api/generate`
    - `OLLAMA_MODEL=llama3.2:3b`
    - `REQUEST_TIMEOUT_SECONDS=60` (opcional)
 6. Dispare o deploy; o container FastAPI agora fica leve (apenas a aplicação). Para provedores externos (Hugging Face, Groq, OpenRouter), basta apontar `OLLAMA_URL` para o endpoint correspondente.
+
+> **Dica:** se você quiser trocar o modelo padrão, ajuste `OLLAMA_MODEL` ao buildar a imagem (ou sobrescreva a variável no Railway). O entrypoint garante que o modelo seja baixado somente quando estiver ausente no volume persistente.
 
 ---
 
