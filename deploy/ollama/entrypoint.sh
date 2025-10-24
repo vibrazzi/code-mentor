@@ -1,5 +1,5 @@
 #!/bin/sh
-set -euo pipefail
+set -eu
 
 MODEL="${OLLAMA_MODEL:-llama3.2:3b}"
 BOOT_LOG="/tmp/ollama-bootstrap.log"
@@ -18,6 +18,7 @@ cleanup() {
 trap cleanup EXIT
 
 echo ">> Waiting Ollama daemon to accept connections..."
+READY=0
 for _ in $(seq 1 30); do
     if OLLAMA_HOST=127.0.0.1 ollama list >/dev/null 2>&1; then
         READY=1
@@ -26,7 +27,7 @@ for _ in $(seq 1 30); do
     sleep 1
 done
 
-if [ "${READY:-0}" -ne 1 ]; then
+if [ "${READY}" -ne 1 ]; then
     echo "!! Ollama daemon failed to start. Logs:"
     cat "${BOOT_LOG}" >&2
     exit 1
