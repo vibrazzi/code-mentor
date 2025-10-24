@@ -965,7 +965,7 @@ body::after {
 
 @media (max-width: 640px) {
   body {
-    padding: 26px 14px;
+    padding: 20px 10px;
   }
 
   .topbar {
@@ -1018,9 +1018,42 @@ body::after {
     width: clamp(42px, 18vw, 54px);
   }
 
+  .chat-message {
+    grid-template-columns: auto 1fr;
+  }
+
+  .chat-message--user {
+    grid-template-columns: 1fr auto;
+  }
+
   .chat-message__content {
     max-width: 100%;
-    padding: clamp(16px, 6vw, 22px);
+    padding: clamp(14px, 4vw, 18px);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .chat-message--assistant .chat-message__content,
+  .chat-message--system .chat-message__content {
+    text-align: left;
+  }
+
+  .chat-message--user .chat-message__content {
+    text-align: left;
+  }
+
+  .chat-message__content pre {
+    overflow-x: auto;
+    max-width: 100%;
+  }
+
+  .chat-message__content code {
+    word-break: break-all;
+  }
+
+  .chat-message__content pre code {
+    word-break: normal;
+    white-space: pre-wrap;
   }
 
   .chat-form {
@@ -1050,6 +1083,10 @@ body::after {
 }
 
 @media (max-width: 520px) {
+  body {
+    padding: 16px 8px;
+  }
+
   .topbar__actions {
     gap: 12px;
   }
@@ -1081,11 +1118,17 @@ body::after {
 
   .chat-card,
   .hero {
-    padding: clamp(20px, 8vw, 24px);
+    padding: clamp(16px, 6vw, 20px);
+  }
+
+  .chat-card {
+    width: 100%;
+    max-width: 100%;
   }
 
   .chat-card__badge {
     width: 100%;
+    justify-content: center;
   }
 
   .chat-card__info {
@@ -1094,7 +1137,48 @@ body::after {
   }
 
   .chat-card__body {
-    padding: clamp(16px, 6vw, 20px);
+    padding: clamp(14px, 5vw, 18px);
+  }
+
+  .chat-message {
+    grid-template-columns: auto 1fr;
+    column-gap: 10px;
+  }
+
+  .chat-message--user {
+    grid-template-columns: 1fr auto;
+  }
+
+  .chat-message__content {
+    font-size: 0.95rem;
+    padding: clamp(12px, 3vw, 16px);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .chat-message--assistant .chat-message__content,
+  .chat-message--system .chat-message__content {
+    text-align: left;
+  }
+
+  .chat-message--user .chat-message__content {
+    text-align: left;
+  }
+
+  .chat-message__content pre {
+    overflow-x: auto;
+    max-width: 100%;
+    font-size: 0.85rem;
+  }
+
+  .chat-message__content code {
+    word-break: break-all;
+    font-size: 0.85rem;
+  }
+
+  .chat-message__content pre code {
+    word-break: normal;
+    white-space: pre-wrap;
   }
 
   .chat-message--assistant {
