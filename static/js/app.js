@@ -23,19 +23,27 @@ function setLoading(isLoading) {
     }
 }
 
-function formatMessageContent(text) {
-    const fragment = document.createDocumentFragment();
-    const lines = text.split(/\r?\n/);
+function formatMessageContent(text, role) {
+    const div = document.createElement("div");
 
-    lines.forEach((line, index) => {
-        if (index > 0) {
-            fragment.appendChild(document.createElement("br"));
-            fragment.appendChild(document.createElement("br"));
-        }
-        fragment.appendChild(document.createTextNode(line));
-    });
+    if (role === "assistant" || role === "system") {
+        div.innerHTML = marked.parse(text, {
+            breaks: true,
+            gfm: true,
+            headerIds: false,
+            mangle: false
+        });
+    } else {
+        const lines = text.split(/\r?\n/);
+        lines.forEach((line, index) => {
+            if (index > 0) {
+                div.appendChild(document.createElement("br"));
+            }
+            div.appendChild(document.createTextNode(line));
+        });
+    }
 
-    return fragment;
+    return div;
 }
 
 function createMessageElement(text, role) {
@@ -48,7 +56,7 @@ function createMessageElement(text, role) {
 
     const content = document.createElement("div");
     content.className = "chat-message__content";
-    content.appendChild(formatMessageContent(text));
+    content.appendChild(formatMessageContent(text, role));
 
     if (role === "user") {
         wrapper.appendChild(content);
