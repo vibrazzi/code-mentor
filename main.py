@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
-from typing import List, Literal
+from typing import List, Literal, Dict, Any
 
 import requests
 from fastapi import FastAPI, HTTPException, Request
@@ -14,7 +14,7 @@ from pydantic import BaseModel, Field, validator
 from starlette.middleware.base import BaseHTTPMiddleware
 
 APP_TITLE = "CodeMentor"
-APP_DESCRIPTION = "Mentor de lógica de programação impulsionado por modelos Ollama."
+APP_DESCRIPTION = "Mentor de lógica de programação com IA (Groq/Ollama)."
 
 BASE_DIR = Path(__file__).resolve().parent
 STATIC_DIR = BASE_DIR / "static"
@@ -89,6 +89,14 @@ def _env_int(name: str, default: int, minimum: int | None = None, maximum: int |
         value = min(value, maximum)
     return value
 
+
+LLM_PROVIDER = os.getenv("LLM_PROVIDER", "ollama").lower()
+LLM_API_KEY = os.getenv("LLM_API_KEY", "")
+LLM_API_URL = os.getenv("LLM_API_URL", "https://api.groq.com/openai/v1/chat/completions")
+LLM_MODEL = os.getenv("LLM_MODEL", "llama-3.1-8b-instant")
+LLM_TEMPERATURE = _env_float("LLM_TEMPERATURE", 0.7, minimum=0.0, maximum=2.0)
+LLM_MAX_TOKENS = _env_int("LLM_MAX_TOKENS", 300, minimum=50, maximum=2000)
+LLM_TOP_P = _env_float("LLM_TOP_P", 0.9, minimum=0.0, maximum=1.0)
 
 OLLAMA_URL = _get_ollama_url()
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.2:3b")
@@ -175,6 +183,101 @@ def _build_prompt(history: List[ConversationTurn], message: str) -> str:
     prompt_parts.append(f"Aluno: {message}")
     prompt_parts.append("CodeMentor:")
     return "\n".join(prompt_parts)
+
+
+def _build_messages(history: List[ConversationTurn], message: str) -> List[Dict[str, str]]:
+    """Constrói formato de mensagens OpenAI-compatible para Groq."""
+    messages = [{"role": "system", "content": PROMPT_SISTEMA}]
+
+    recent_history = history[-MAX_HISTORY_TURNS * 2 :]
+    for item in recent_history:
+        messages.append({"role": item.role, "content": item.content})
+
+    messages.append({"role": "user", "content": message})
+    return messages
+
+
+def _call_groq(messages: List[Dict[str, str]], max_retries: int = 2) -> str:
+    """Chama a Groq API usando formato OpenAI-compatible."""
+    if not LLM_API_KEY:
+        raise HTTPException(
+            status_code=500,
+            detail="LLM_API_KEY não configurada. Adicione a chave da Groq no Railway."
+        )
+
+    payload = {
+        "model": LLM_MODEL,
+        "messages": messages,
+        "temperature": LLM_TEMPERATURE,
+        "max_tokens": LLM_MAX_TOKENS,
+        "top_p": LLM_TOP_P,
+        "stop": ["Aluno:"],
+    }
+
+    headers = {
+        "Authorization": f"Bearer {LLM_API_KEY}",
+        "Content-Type": "application/json",
+    }
+
+    last_exception = None
+    for attempt in range(max_retries + 1):
+        try:
+            response = requests.post(
+                LLM_API_URL,
+                json=payload,
+                headers=headers,
+                timeout=30,
+            )
+
+            if response.status_code != 200:
+                error_detail = response.text
+                raise HTTPException(
+                    status_code=502,
+                    detail=f"Groq API retornou status {response.status_code}: {error_detail}",
+                )
+
+            data = response.json()
+            answer = data.get("choices", [{}])[0].get("message", {}).get("content", "")
+
+            if not answer:
+                raise HTTPException(
+                    status_code=502,
+                    detail="Groq API não retornou conteúdo na resposta.",
+                )
+
+            return answer.strip()
+
+        except requests.Timeout as exc:
+            last_exception = exc
+            if attempt < max_retries:
+                continue
+            raise HTTPException(
+                status_code=504,
+                detail=f"Timeout ao conectar com Groq após {max_retries + 1} tentativas",
+            ) from exc
+
+        except requests.RequestException as exc:
+            last_exception = exc
+            if attempt < max_retries:
+                continue
+            raise HTTPException(
+                status_code=503,
+                detail=f"Erro ao conectar com Groq: {exc}",
+            ) from exc
+
+        except json.JSONDecodeError as exc:
+            raise HTTPException(
+                status_code=502,
+                detail="Resposta inválida da Groq API (JSON malformado).",
+            ) from exc
+
+    if last_exception:
+        raise HTTPException(
+            status_code=503,
+            detail=f"Falha após {max_retries + 1} tentativas: {last_exception}",
+        ) from last_exception
+
+    raise HTTPException(status_code=500, detail="Erro desconhecido ao chamar Groq")
 
 
 def _call_ollama(prompt: str, max_retries: int = 2) -> str:
@@ -273,8 +376,12 @@ async def home(request: Request) -> HTMLResponse:
 @app.post("/api/chat", response_model=ChatResponse)
 async def chat_endpoint(payload: ChatRequest) -> ChatResponse:
     """Endpoint para processar mensagens do chat."""
-    prompt = _build_prompt(payload.history, payload.message)
-    answer = _call_ollama(prompt)
+    if LLM_PROVIDER == "groq":
+        messages = _build_messages(payload.history, payload.message)
+        answer = _call_groq(messages)
+    else:
+        prompt = _build_prompt(payload.history, payload.message)
+        answer = _call_ollama(prompt)
     return ChatResponse(response=answer)
 
 
@@ -291,30 +398,35 @@ async def health_check() -> dict[str, str]:
 
 
 @app.get("/debug")
-async def debug_info() -> dict:
+async def debug_info() -> Dict[str, Any]:
     """Retorna informações de debug sobre a configuração."""
-    return {
-        "ollama_url": OLLAMA_URL,
-        "ollama_model": OLLAMA_MODEL,
+    base_info = {
+        "provider": LLM_PROVIDER,
         "timeout_seconds": REQUEST_TIMEOUT_SECONDS,
-        "temperature": OLLAMA_TEMPERATURE,
-        "top_p": OLLAMA_TOP_P,
-        "num_predict": OLLAMA_NUM_PREDICT,
-        "num_ctx": OLLAMA_NUM_CTX,
-        "num_thread": OLLAMA_NUM_THREAD,
-        "num_batch": OLLAMA_NUM_BATCH,
-        "environment": {
-            "OLLAMA_URL": os.getenv("OLLAMA_URL"),
-            "OLLAMA_MODEL": os.getenv("OLLAMA_MODEL"),
-            "OLLAMA_TEMPERATURE": os.getenv("OLLAMA_TEMPERATURE"),
-            "OLLAMA_TOP_P": os.getenv("OLLAMA_TOP_P"),
-            "OLLAMA_NUM_PREDICT": os.getenv("OLLAMA_NUM_PREDICT"),
-            "OLLAMA_NUM_CTX": os.getenv("OLLAMA_NUM_CTX"),
-            "OLLAMA_NUM_THREAD": os.getenv("OLLAMA_NUM_THREAD"),
-            "OLLAMA_NUM_BATCH": os.getenv("OLLAMA_NUM_BATCH"),
-            "REQUEST_TIMEOUT_SECONDS": os.getenv("REQUEST_TIMEOUT_SECONDS"),
-        }
     }
+
+    if LLM_PROVIDER == "groq":
+        base_info.update({
+            "api_url": LLM_API_URL,
+            "model": LLM_MODEL,
+            "temperature": LLM_TEMPERATURE,
+            "max_tokens": LLM_MAX_TOKENS,
+            "top_p": LLM_TOP_P,
+            "api_key_configured": bool(LLM_API_KEY),
+        })
+    else:
+        base_info.update({
+            "ollama_url": OLLAMA_URL,
+            "ollama_model": OLLAMA_MODEL,
+            "temperature": OLLAMA_TEMPERATURE,
+            "top_p": OLLAMA_TOP_P,
+            "num_predict": OLLAMA_NUM_PREDICT,
+            "num_ctx": OLLAMA_NUM_CTX,
+            "num_thread": OLLAMA_NUM_THREAD,
+            "num_batch": OLLAMA_NUM_BATCH,
+        })
+
+    return base_info
 
 
 if __name__ == "__main__":
