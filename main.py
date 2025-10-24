@@ -150,9 +150,9 @@ def _call_ollama(prompt: str, max_retries: int = 2) -> str:
         "options": {
             "temperature": 0.7,
             "top_p": 0.9,
-            "num_predict": 256,
-            "num_ctx": 2048,
-            "num_thread": 4,
+            "num_predict": 150,
+            "num_ctx": 1536,
+            "num_thread": 6,
         },
     }
 
