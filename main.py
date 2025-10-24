@@ -144,7 +144,7 @@ REQUEST_TIMEOUT_SECONDS = float(os.getenv("REQUEST_TIMEOUT_SECONDS", "90"))
 
 class ConversationTurn(BaseModel):
     role: Literal["user", "assistant"]
-    content: str = Field(..., min_length=1, max_length=1500)
+    content: str = Field(..., min_length=1, max_length=3000)
 
     @validator("content")
     def _strip_content(cls, value: str) -> str:
