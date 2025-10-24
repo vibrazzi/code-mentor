@@ -95,7 +95,7 @@ LLM_API_KEY = os.getenv("LLM_API_KEY", "")
 LLM_API_URL = os.getenv("LLM_API_URL", "https://api.groq.com/openai/v1/chat/completions")
 LLM_MODEL = os.getenv("LLM_MODEL", "llama-3.1-8b-instant")
 LLM_TEMPERATURE = _env_float("LLM_TEMPERATURE", 0.7, minimum=0.0, maximum=2.0)
-LLM_MAX_TOKENS = _env_int("LLM_MAX_TOKENS", 300, minimum=50, maximum=2000)
+LLM_MAX_TOKENS = _env_int("LLM_MAX_TOKENS", 800, minimum=50, maximum=2000)
 LLM_TOP_P = _env_float("LLM_TOP_P", 0.9, minimum=0.0, maximum=1.0)
 
 OLLAMA_URL = _get_ollama_url()
