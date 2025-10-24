@@ -61,8 +61,45 @@ def _get_ollama_url() -> str:
 
     return "http://localhost:11434/api/generate"
 
+
+def _env_float(name: str, default: float, minimum: float | None = None, maximum: float | None = None) -> float:
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    try:
+        value = float(raw)
+    except ValueError:
+        return default
+    if minimum is not None:
+        value = max(value, minimum)
+    if maximum is not None:
+        value = min(value, maximum)
+    return value
+
+
+def _env_int(name: str, default: int, minimum: int | None = None, maximum: int | None = None) -> int:
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    try:
+        value = int(raw)
+    except ValueError:
+        return default
+    if minimum is not None:
+        value = max(value, minimum)
+    if maximum is not None:
+        value = min(value, maximum)
+    return value
+
+
 OLLAMA_URL = _get_ollama_url()
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.2:3b")
+OLLAMA_TEMPERATURE = _env_float("OLLAMA_TEMPERATURE", 0.7, minimum=0.0)
+OLLAMA_TOP_P = _env_float("OLLAMA_TOP_P", 0.9, minimum=0.0, maximum=1.0)
+OLLAMA_NUM_PREDICT = _env_int("OLLAMA_NUM_PREDICT", 256, minimum=32)
+OLLAMA_NUM_CTX = _env_int("OLLAMA_NUM_CTX", 1536, minimum=512)
+OLLAMA_NUM_THREAD = _env_int("OLLAMA_NUM_THREAD", 8, minimum=1)
+OLLAMA_NUM_BATCH = _env_int("OLLAMA_NUM_BATCH", 512, minimum=1)
 
 PROMPT_SISTEMA = """Você é o CodeMentor, um experiente mentor de lógica de programação.
 
@@ -148,12 +185,12 @@ def _call_ollama(prompt: str, max_retries: int = 2) -> str:
         "prompt": prompt,
         "stream": False,
         "options": {
-            "temperature": 0.7,
-            "top_p": 0.9,
-            "num_predict": 400,
-            "num_ctx": 1536,
-            "num_thread": 8,
-            "num_batch": 512,
+            "temperature": OLLAMA_TEMPERATURE,
+            "top_p": OLLAMA_TOP_P,
+            "num_predict": OLLAMA_NUM_PREDICT,
+            "num_ctx": OLLAMA_NUM_CTX,
+            "num_thread": OLLAMA_NUM_THREAD,
+            "num_batch": OLLAMA_NUM_BATCH,
         },
     }
 

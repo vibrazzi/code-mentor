@@ -123,7 +123,13 @@ docker run --rm \
 |----------|--------|-----------|
 | `OLLAMA_URL` | `http://localhost:11434/api/generate` | Endpoint da API do Ollama. |
 | `OLLAMA_MODEL` | `llama3.2:3b` | Identificador do modelo a ser utilizado. |
-| `REQUEST_TIMEOUT_SECONDS` | `60` | Timeout (segundos) das requisições ao Ollama. |
+| `REQUEST_TIMEOUT_SECONDS` | `120` | Timeout (segundos) das requisições ao Ollama. |
+| `OLLAMA_TEMPERATURE` | `0.7` | Controle de criatividade; reduza para respostas mais objetivas. |
+| `OLLAMA_TOP_P` | `0.9` | Nucleus sampling; menores valores geram respostas mais conservadoras. |
+| `OLLAMA_NUM_PREDICT` | `256` | Limite de tokens gerados (quanto menor, mais rápido responde). |
+| `OLLAMA_NUM_CTX` | `1536` | Tamanho do contexto enviado ao modelo (reduza para economizar memória). |
+| `OLLAMA_NUM_THREAD` | `8` | Threads de inferência; ajuste conforme CPU disponível. |
+| `OLLAMA_NUM_BATCH` | `512` | Tamanho do batch interno; diminua se houver gargalo de memória. |
 
 Defina estas variáveis antes de iniciar o servidor (local ou produção). Exemplo:
 
