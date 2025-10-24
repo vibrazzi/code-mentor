@@ -298,9 +298,22 @@ async def debug_info() -> dict:
         "ollama_url": OLLAMA_URL,
         "ollama_model": OLLAMA_MODEL,
         "timeout_seconds": REQUEST_TIMEOUT_SECONDS,
+        "temperature": OLLAMA_TEMPERATURE,
+        "top_p": OLLAMA_TOP_P,
+        "num_predict": OLLAMA_NUM_PREDICT,
+        "num_ctx": OLLAMA_NUM_CTX,
+        "num_thread": OLLAMA_NUM_THREAD,
+        "num_batch": OLLAMA_NUM_BATCH,
         "environment": {
             "OLLAMA_URL": os.getenv("OLLAMA_URL"),
             "OLLAMA_MODEL": os.getenv("OLLAMA_MODEL"),
+            "OLLAMA_TEMPERATURE": os.getenv("OLLAMA_TEMPERATURE"),
+            "OLLAMA_TOP_P": os.getenv("OLLAMA_TOP_P"),
+            "OLLAMA_NUM_PREDICT": os.getenv("OLLAMA_NUM_PREDICT"),
+            "OLLAMA_NUM_CTX": os.getenv("OLLAMA_NUM_CTX"),
+            "OLLAMA_NUM_THREAD": os.getenv("OLLAMA_NUM_THREAD"),
+            "OLLAMA_NUM_BATCH": os.getenv("OLLAMA_NUM_BATCH"),
+            "REQUEST_TIMEOUT_SECONDS": os.getenv("REQUEST_TIMEOUT_SECONDS"),
         }
     }
 
