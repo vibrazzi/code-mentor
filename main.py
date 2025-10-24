@@ -94,7 +94,7 @@ OLLAMA_URL = _get_ollama_url()
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.2:3b")
 OLLAMA_TEMPERATURE = _env_float("OLLAMA_TEMPERATURE", 0.7, minimum=0.0)
 OLLAMA_TOP_P = _env_float("OLLAMA_TOP_P", 0.9, minimum=0.0, maximum=1.0)
-OLLAMA_NUM_PREDICT = _env_int("OLLAMA_NUM_PREDICT", 150, minimum=32)
+OLLAMA_NUM_PREDICT = _env_int("OLLAMA_NUM_PREDICT", 300, minimum=32)
 OLLAMA_NUM_CTX = _env_int("OLLAMA_NUM_CTX", 512, minimum=256)
 OLLAMA_NUM_THREAD = _env_int("OLLAMA_NUM_THREAD", 8, minimum=1)
 OLLAMA_NUM_BATCH = _env_int("OLLAMA_NUM_BATCH", 256, minimum=1)
@@ -189,6 +189,7 @@ def _call_ollama(prompt: str, max_retries: int = 2) -> str:
             "num_ctx": OLLAMA_NUM_CTX,
             "num_thread": OLLAMA_NUM_THREAD,
             "num_batch": OLLAMA_NUM_BATCH,
+            "stop": ["\nAluno:", "\n\nAluno:", "Aluno:"],  # Para quando detectar nova pergunta
         },
     }
 
