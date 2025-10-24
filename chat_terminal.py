@@ -30,7 +30,7 @@ Usuário atual: {mensagem}
 Responda como CodeMentor, focando em lógica de programação:"""
 
     payload = {
-        "model": "llama3.2",
+        "model": "llama3.2:3b",
         "prompt": prompt,
         "stream": False,
         "options": {
