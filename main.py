@@ -85,7 +85,7 @@ Quando responder:
 Mantenha as respostas concisas mas completas."""
 
 MAX_HISTORY_TURNS = 3
-REQUEST_TIMEOUT_SECONDS = float(os.getenv("REQUEST_TIMEOUT_SECONDS", "60"))
+REQUEST_TIMEOUT_SECONDS = float(os.getenv("REQUEST_TIMEOUT_SECONDS", "120"))
 
 
 class ConversationTurn(BaseModel):
@@ -131,7 +131,7 @@ def _build_prompt(history: List[ConversationTurn], message: str) -> str:
     return "\n".join(prompt_parts)
 
 
-def _call_ollama(prompt: str) -> str:
+def _call_ollama(prompt: str, max_retries: int = 2) -> str:
     payload = {
         "model": OLLAMA_MODEL,
         "prompt": prompt,
@@ -143,41 +143,73 @@ def _call_ollama(prompt: str) -> str:
         },
     }
 
-    try:
-        response = requests.post(
-            OLLAMA_URL,
-            json=payload,
-            timeout=REQUEST_TIMEOUT_SECONDS,
-        )
-    except requests.RequestException as exc:
+    last_exception = None
+    for attempt in range(max_retries + 1):
+        try:
+            response = requests.post(
+                OLLAMA_URL,
+                json=payload,
+                timeout=REQUEST_TIMEOUT_SECONDS,
+            )
+            
+            if response.status_code != 200:
+                error_detail = response.text
+                raise HTTPException(
+                    status_code=502,
+                    detail=f"Ollama retornou status {response.status_code}: {error_detail}",
+                )
+
+            data = response.json()
+            answer = data.get("response")
+            if not answer:
+                raise HTTPException(
+                    status_code=502,
+                    detail="Ollama não retornou conteúdo na resposta.",
+                )
+
+            return answer.strip()
+            
+        except requests.Timeout as exc:
+            last_exception = exc
+            if attempt < max_retries:
+                continue
+            raise HTTPException(
+                status_code=504,
+                detail=f"Timeout ao conectar com Ollama após {max_retries + 1} tentativas (limite: {REQUEST_TIMEOUT_SECONDS}s)",
+            ) from exc
+            
+        except requests.ConnectionError as exc:
+            last_exception = exc
+            if attempt < max_retries:
+                continue
+            raise HTTPException(
+                status_code=503,
+                detail=f"Erro de conexão com Ollama: serviço pode estar iniciando. URL: {OLLAMA_URL}",
+            ) from exc
+            
+        except requests.RequestException as exc:
+            last_exception = exc
+            if attempt < max_retries:
+                continue
+            raise HTTPException(
+                status_code=503,
+                detail=f"Erro ao conectar com Ollama: {exc}",
+            ) from exc
+            
+        except json.JSONDecodeError as exc:
+            raise HTTPException(
+                status_code=502,
+                detail="Resposta inválida do Ollama (JSON malformado).",
+            ) from exc
+            
+    # Fallback se algo inesperado acontecer
+    if last_exception:
         raise HTTPException(
             status_code=503,
-            detail=f"Erro ao conectar com Ollama: {exc}",
-        ) from exc
-
-    if response.status_code != 200:
-        error_detail = response.text
-        raise HTTPException(
-            status_code=502,
-            detail=f"Ollama retornou status {response.status_code}: {error_detail}",
-        )
-
-    try:
-        data = response.json()
-    except json.JSONDecodeError as exc:
-        raise HTTPException(
-            status_code=502,
-            detail="Resposta inválida do Ollama (JSON malformado).",
-        ) from exc
-
-    answer = data.get("response")
-    if not answer:
-        raise HTTPException(
-            status_code=502,
-            detail="Ollama não retornou conteúdo na resposta.",
-        )
-
-    return answer.strip()
+            detail=f"Falha após {max_retries + 1} tentativas: {last_exception}",
+        ) from last_exception
+    
+    raise HTTPException(status_code=500, detail="Erro desconhecido ao chamar Ollama")
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -207,6 +239,20 @@ async def health_check() -> dict[str, str]:
         return {"status": "unhealthy", "detail": exc.detail}
 
     return {"status": "healthy", "ollama": OLLAMA_MODEL}
+
+
+@app.get("/debug")
+async def debug_info() -> dict:
+    """Retorna informações de debug sobre a configuração."""
+    return {
+        "ollama_url": OLLAMA_URL,
+        "ollama_model": OLLAMA_MODEL,
+        "timeout_seconds": REQUEST_TIMEOUT_SECONDS,
+        "environment": {
+            "OLLAMA_URL": os.getenv("OLLAMA_URL"),
+            "OLLAMA_MODEL": os.getenv("OLLAMA_MODEL"),
+        }
+    }
 
 
 if __name__ == "__main__":
