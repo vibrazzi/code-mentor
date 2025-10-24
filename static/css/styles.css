@@ -77,12 +77,18 @@ body {
       rgba(122, 138, 255, 0.18),
       transparent 58%
     ),
+    radial-gradient(
+      100% 100% at 50% 50%,
+      rgba(138, 123, 255, 0.1),
+      transparent 70%
+    ),
     linear-gradient(125deg, #02030a 0%, #060b1c 48%, #010209 100%);
   color: var(--color-text);
   position: relative;
   font-family: var(--font-stack);
   overflow-x: hidden;
   isolation: isolate;
+  animation: background-shift 20s ease-in-out infinite alternate;
 }
 
 body::before {
@@ -135,6 +141,40 @@ body::after {
   }
 }
 
+@keyframes background-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes fade-in-up {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in-scale {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 .layout {
   max-width: var(--container-max);
   margin: 0 auto;
@@ -162,6 +202,13 @@ body::after {
   position: relative;
   overflow: hidden;
   isolation: isolate;
+  transition: transform var(--transition), box-shadow var(--transition);
+  animation: fade-in-up 0.8s ease-out;
+}
+
+.topbar:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
 }
 
 .topbar::before {
@@ -204,6 +251,13 @@ body::after {
   color: var(--color-text);
   box-shadow: 0 18px 30px rgba(72, 96, 255, 0.35);
   position: relative;
+  overflow: hidden;
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.topbar__logo:hover {
+  transform: scale(1.05);
+  box-shadow: 0 24px 40px rgba(72, 96, 255, 0.5), 0 0 20px rgba(46, 249, 255, 0.3);
 }
 
 .topbar__logo::after {
@@ -276,19 +330,37 @@ body::after {
   background-size: 200% 200%;
   border: 1px solid rgba(143, 155, 255, 0.42);
   transition: transform var(--transition), box-shadow var(--transition),
-    background-position var(--transition);
+    background-position var(--transition), filter var(--transition);
   font-size: clamp(0.86rem, 1.4vw, 0.96rem);
   letter-spacing: 0.05em;
   position: relative;
   overflow: hidden;
 }
 
+.topbar__button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1),
+    transparent 50%
+  );
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+
 .topbar__button:hover,
 .topbar__button:focus-visible {
-  transform: translateY(-2px);
+  transform: translateY(-3px) scale(1.02);
   background-position: 100% 50%;
   box-shadow: 0 18px 30px rgba(122, 138, 255, 0.38),
     0 0 18px rgba(46, 249, 255, 0.34);
+  filter: brightness(1.1);
+}
+
+.topbar__button:hover::before {
+  opacity: 1;
 }
 
 .topbar__button:focus-visible {
@@ -309,6 +381,13 @@ body::after {
   margin: 0 auto;
   border: 1px solid rgba(143, 155, 255, 0.2);
   isolation: isolate;
+  transition: transform var(--transition), box-shadow var(--transition);
+  animation: fade-in-scale 1s ease-out 0.2s both;
+}
+
+.hero:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl), 0 0 40px rgba(46, 249, 255, 0.2);
 }
 
 .hero::before {
@@ -431,6 +510,12 @@ body::after {
   box-shadow: var(--shadow-sm);
   overflow: hidden;
   backdrop-filter: blur(18px);
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.hero__stat:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: var(--shadow-md), 0 0 20px rgba(46, 249, 255, 0.15);
 }
 
 .hero__stat::after {
@@ -485,6 +570,13 @@ body::after {
   width: min(100%, 980px);
   margin: 0 auto;
   isolation: isolate;
+  transition: transform var(--transition), box-shadow var(--transition);
+  animation: fade-in-up 1s ease-out 0.4s both;
+}
+
+.chat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-xl), 0 0 30px rgba(122, 138, 255, 0.15);
 }
 
 .chat-card::before {
@@ -554,6 +646,12 @@ body::after {
     0 0 18px rgba(122, 138, 255, 0.22);
   position: relative;
   overflow: hidden;
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.chat-card__logo:hover {
+  transform: scale(1.05);
+  box-shadow: 0 28px 42px rgba(46, 249, 255, 0.35), 0 0 25px rgba(122, 138, 255, 0.3);
 }
 
 .chat-card__logo::after {
@@ -589,15 +687,35 @@ body::after {
   border: 1px solid rgba(143, 155, 255, 0.35);
   box-shadow: 0 12px 22px rgba(122, 138, 255, 0.24);
   transition: transform var(--transition), box-shadow var(--transition),
-    background-position var(--transition);
+    background-position var(--transition), filter var(--transition);
   background-size: 200% 200%;
+  position: relative;
+  overflow: hidden;
+}
+
+.chat-card__badge::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1),
+    transparent 50%
+  );
+  opacity: 0;
+  transition: opacity var(--transition);
 }
 
 .chat-card__badge:hover,
 .chat-card__badge:focus-visible {
-  transform: translateY(-2px);
+  transform: translateY(-3px) scale(1.02);
   box-shadow: 0 18px 30px rgba(122, 138, 255, 0.32);
   background-position: 100% 50%;
+  filter: brightness(1.1);
+}
+
+.chat-card__badge:hover::before {
+  opacity: 1;
 }
 
 .badge__icon {
@@ -672,6 +790,13 @@ body::after {
     0 0 18px rgba(122, 138, 255, 0.18);
   border: 1px solid rgba(122, 138, 255, 0.28);
   position: relative;
+  overflow: hidden;
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.chat-message__avatar:hover {
+  transform: scale(1.1);
+  box-shadow: 0 16px 28px rgba(4, 7, 18, 0.5), 0 0 25px rgba(122, 138, 255, 0.25);
 }
 
 .chat-message__content {
@@ -987,11 +1112,38 @@ body::after {
   letter-spacing: 0.04em;
   cursor: pointer;
   transition: transform var(--transition), box-shadow var(--transition),
-    opacity var(--transition), background-position var(--transition);
+    opacity var(--transition), background-position var(--transition), filter var(--transition);
   display: inline-flex;
   align-items: center;
   gap: 10px;
   background-size: 200% 200%;
+  position: relative;
+  overflow: hidden;
+}
+
+.chat-form__button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.15),
+    transparent 50%
+  );
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+
+.chat-form__button:not(:disabled):hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 20px 36px rgba(122, 138, 255, 0.32),
+    0 0 20px rgba(46, 249, 255, 0.32);
+  background-position: 100% 50%;
+  filter: brightness(1.1);
+}
+
+.chat-form__button:not(:disabled):hover::before {
+  opacity: 1;
 }
 
 .chat-form__button:disabled {
@@ -1051,8 +1203,23 @@ body::after {
   font-size: clamp(0.86rem, 1.4vw, 0.94rem);
   cursor: pointer;
   transition: background var(--transition), transform var(--transition),
-    border-color var(--transition), box-shadow var(--transition);
+    border-color var(--transition), box-shadow var(--transition), filter var(--transition);
   background-size: 200% 200%;
+  position: relative;
+  overflow: hidden;
+}
+
+.suggestions__item::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1),
+    transparent 50%
+  );
+  opacity: 0;
+  transition: opacity var(--transition);
 }
 
 .suggestions__item:hover,
@@ -1064,8 +1231,13 @@ body::after {
     rgba(46, 249, 255, 0.28)
   );
   border-color: rgba(46, 249, 255, 0.38);
-  transform: translateY(-2px);
+  transform: translateY(-3px) scale(1.02);
   box-shadow: 0 14px 22px rgba(122, 138, 255, 0.24);
+  filter: brightness(1.05);
+}
+
+.suggestions__item:hover::before {
+  opacity: 1;
 }
 
 .sidebar {
@@ -1089,6 +1261,12 @@ body::after {
   box-shadow: var(--shadow-md);
   position: relative;
   overflow: hidden;
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.sidebar__card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg), 0 0 25px rgba(122, 138, 255, 0.15);
 }
 
 .sidebar__card::before {
@@ -1206,6 +1384,10 @@ body::after {
   .chat-card::after {
     inset: 10px;
   }
+
+  .hero__stats {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
 }
 
 @media (max-width: 1024px) {
@@ -1227,6 +1409,15 @@ body::after {
 
   .chat-card__header {
     align-items: flex-start;
+  }
+
+  .chat-message__avatar {
+    width: clamp(50px, 12vw, 65px);
+    height: clamp(50px, 12vw, 67px);
+  }
+
+  .chat-message__content {
+    font-size: clamp(1rem, 2.8vw, 1.06rem);
   }
 }
 
@@ -1347,6 +1538,16 @@ body::after {
     flex-direction: column;
     align-items: stretch;
   }
+
+  .chat-message__avatar {
+    width: clamp(48px, 15vw, 62px);
+    height: clamp(48px, 15vw, 64px);
+  }
+
+  .chat-message__content {
+    font-size: clamp(0.98rem, 3vw, 1.04rem);
+    padding: clamp(16px, 4vw, 20px);
+  }
 }
 
 @media (max-width: 640px) {
@@ -1403,7 +1604,7 @@ body::after {
 
   .chat-message__avatar {
     width: clamp(42px, 18vw, 54px);
-    height: clamp(42px, 18vw, 54px);
+    height: clamp(42px, 18vw, 56px);
   }
 
   .chat-message__content {
@@ -1411,6 +1612,10 @@ body::after {
     padding: clamp(14px, 5vw, 18px);
     word-wrap: break-word;
     overflow-wrap: break-word;
+  }
+
+  .chat-form__input {
+    font-size: clamp(0.95rem, 2vw, 1rem);
   }
 }
 
@@ -1500,6 +1705,14 @@ body::after {
   .message-list {
     gap: 16px;
   }
+
+  .chat-form__input {
+    padding: clamp(12px, 5vw, 16px);
+  }
+
+  .suggestions__item {
+    font-size: clamp(0.84rem, 2vw, 0.92rem);
+  }
 }
 
 @media (max-width: 420px) {
@@ -1529,6 +1742,20 @@ body::after {
 
   .chat-form__input {
     padding: clamp(12px, 6vw, 16px);
+  }
+
+  .chat-message__avatar {
+    width: clamp(40px, 20vw, 52px);
+    height: clamp(40px, 20vw, 54px);
+  }
+
+  .chat-message__content {
+    font-size: 0.92rem;
+    padding: clamp(10px, 4vw, 14px);
+  }
+
+  .sidebar__card {
+    padding: clamp(16px, 4vw, 20px);
   }
 }
 
