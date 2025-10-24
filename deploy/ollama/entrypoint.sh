@@ -2,6 +2,7 @@
 set -eu
 
 MODEL="${OLLAMA_MODEL:-llama3.2:3b}"
+MODEL="${MODEL#OLLAMA_MODEL=}"
 BOOT_LOG="/tmp/ollama-bootstrap.log"
 
 echo ">> Bootstrapping Ollama with model '${MODEL}'."
