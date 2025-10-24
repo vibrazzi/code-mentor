@@ -10,4 +10,4 @@ ENV OLLAMA_MODEL=llama3.2:3b \
 COPY deploy/ollama/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-CMD ["/entrypoint.sh"]
+ENTRYPOINT ["/bin/sh", "/entrypoint.sh"]
