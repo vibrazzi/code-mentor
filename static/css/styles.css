@@ -1,3 +1,19 @@
+/**
+ * CodeMentor - Design System
+ *
+ * Estética: Futurista/Glassmorphism com gradientes, sombras e blur effects
+ *
+ * Performance Note: backdrop-filter: blur() é usado extensivamente para criar
+ * o efeito de vidro. Esta propriedade é GPU-intensive e pode causar quedas de
+ * FPS em dispositivos móveis ou computadores mais antigos. O trade-off entre
+ * visual e performance foi conscientemente escolhido em favor da identidade
+ * visual premium do produto.
+ *
+ * Manutenibilidade: Para facilitar a manutenção, considere dividir este arquivo
+ * em componentes parciais (_topbar.css, _hero.css, _chat.css, etc.) se o
+ * projeto crescer significativamente.
+ */
+
 :root {
   color-scheme: dark;
   --color-bg: #01020a;
@@ -855,7 +871,6 @@ body::after {
   border: 1px solid rgba(255, 255, 255, 0.09);
   pointer-events: none;
   box-shadow: inset 0 0 0 1px rgba(143, 155, 255, 0.12);
-  backdrop-filter: blur(var(--blur-soft));
 }
 
 .chat-card__header {
@@ -930,6 +945,13 @@ body::after {
     transparent 65%
   );
   mix-blend-mode: soft-light;
+}
+
+#chat-title {
+  margin: 0;
+  font-size: clamp(1.04rem, 1.5vw + 0.8rem, 1.22rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
 }
 
 .chat-card__subtitle {
@@ -1074,7 +1096,7 @@ body::after {
 .chat-message {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
-  align-items: flex-start;
+  align-items: flex-end;
   column-gap: clamp(12px, 2.5vw + 8px, 26px);
   animation: message-slide-in 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -1098,7 +1120,7 @@ body::after {
   place-items: center;
   background: rgba(122, 138, 255, 0.3);
   color: #0a0f25;
-  font-size: clamp(1.24rem, 3vw + 0.8rem, 1.76rem);
+  font-size: clamp(1rem, 2.5vw + 0.6rem, 1.3rem);
   box-shadow: 0 clamp(8px, 1.5vw, 14px) clamp(16px, 2vw, 24px) rgba(3, 6, 16, 0.45),
     0 0 clamp(12px, 2vw, 20px) rgba(122, 138, 255, 0.22),
     inset 0 1px 0 rgba(255, 255, 255, 0.12);
@@ -2029,11 +2051,6 @@ body::after {
     align-items: stretch;
   }
 
-  .chat-message__avatar {
-    width: clamp(46px, 12vw, 64px);
-    height: clamp(46px, 12vw, 64px);
-  }
-
   .chat-message__content {
     font-size: clamp(0.94rem, 2.8vw + 0.7rem, 1.06rem);
     padding: clamp(12px, 3.5vw, 20px);
@@ -2093,8 +2110,8 @@ body::after {
   }
 
   .chat-message__avatar {
-    width: clamp(40px, 14vw, 58px);
-    height: clamp(40px, 14vw, 58px);
+    width: clamp(32px, 12vw, 44px);
+    height: clamp(32px, 12vw, 44px);
   }
 
   .chat-message__content {
@@ -2184,7 +2201,7 @@ body::after {
   }
 
   .chat-message__content pre code {
-    word-break: normal;
+    word-break: break-all;
     white-space: pre-wrap;
   }
 
@@ -2235,8 +2252,8 @@ body::after {
   }
 
   .chat-message__avatar {
-    width: clamp(38px, 16vw, 54px);
-    height: clamp(38px, 16vw, 54px);
+    width: clamp(30px, 14vw, 40px);
+    height: clamp(30px, 14vw, 40px);
   }
 
   .chat-message__content {
@@ -2267,9 +2284,9 @@ body::after {
   }
 
   .chat-message__avatar {
-    width: 36px;
-    height: 36px;
-    font-size: 1.1rem;
+    width: 28px;
+    height: 28px;
+    font-size: 1rem;
   }
 }
 
