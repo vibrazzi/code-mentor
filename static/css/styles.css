@@ -226,7 +226,6 @@ body::after {
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md),
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(var(--blur-strong)) saturate(180%);
   position: relative;
   overflow: hidden;
   isolation: isolate;
@@ -400,7 +399,6 @@ body::after {
   color: var(--color-text-dim);
   box-shadow: var(--outline-soft),
     inset 0 1px 0 rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(var(--blur-soft));
   transition: all var(--transition-smooth);
 }
 
@@ -575,7 +573,6 @@ body::after {
   border-radius: var(--radius-xl);
   border: 1px solid rgba(255, 255, 255, 0.1);
   pointer-events: none;
-  backdrop-filter: blur(var(--blur-soft));
   box-shadow: inset 0 0 0 1px rgba(143, 155, 255, 0.15);
   z-index: 0;
 }
@@ -643,7 +640,6 @@ body::after {
   font-weight: 500;
   box-shadow: var(--outline-soft),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(var(--blur-medium));
   transition: all var(--transition-smooth);
   will-change: transform;
 }
@@ -669,7 +665,6 @@ body::after {
   border: 1px solid rgba(143, 155, 255, 0.28);
   box-shadow: 0 clamp(8px, 1.5vw, 14px) clamp(16px, 2vw, 26px) rgba(2, 6, 18, 0.45),
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(var(--blur-medium));
   transition: all var(--transition-smooth);
 }
 
@@ -706,7 +701,6 @@ body::after {
   box-shadow: var(--shadow-sm),
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
   overflow: hidden;
-  backdrop-filter: blur(var(--blur-medium)) saturate(180%);
   transition: all var(--transition-smooth);
   will-change: transform;
 }
@@ -802,7 +796,6 @@ body::after {
   );
   border-radius: var(--radius-xl);
   border: 1.5px solid rgba(143, 155, 255, 0.24);
-  backdrop-filter: blur(var(--blur-strong)) saturate(180%);
   box-shadow: var(--shadow-xl),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
   overflow: hidden;
@@ -859,7 +852,6 @@ body::after {
 
 @media (min-width: 1025px) {
   .chat-card {
-    backdrop-filter: saturate(180%);
   }
 }
 
@@ -1071,7 +1063,6 @@ body::after {
   gap: clamp(14px, 2vw + 8px, 26px);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05),
     inset 0 2px 8px rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(var(--blur-medium));
   min-height: clamp(300px, 40vh, 500px);
 }
 
@@ -1167,7 +1158,6 @@ body::after {
   box-shadow: var(--shadow-sm),
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
   max-width: min(100%, 760px);
-  backdrop-filter: blur(var(--blur-medium)) saturate(150%);
   transition: all var(--transition-smooth);
   word-wrap: break-word;
   overflow-wrap: break-word;
@@ -1393,7 +1383,6 @@ body::after {
   color: var(--color-text-muted);
   box-shadow: var(--outline-soft),
     inset 0 1px 0 rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(var(--blur-soft));
 }
 
 .typing-indicator--visible {
@@ -1455,7 +1444,6 @@ body::after {
   transition: all var(--transition-smooth);
   box-shadow: inset 0 0 0 1px rgba(143, 155, 255, 0.16),
     inset 0 2px 6px rgba(0, 0, 0, 0.12);
-  backdrop-filter: blur(var(--blur-medium));
   font-family: inherit;
   line-height: 1.5;
 }
@@ -1575,7 +1563,6 @@ body::after {
   gap: clamp(10px, 1.5vw + 6px, 20px);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05),
     inset 0 2px 6px rgba(0, 0, 0, 0.15);
-  backdrop-filter: blur(var(--blur-medium));
 }
 
 .suggestions__title {
@@ -1697,7 +1684,6 @@ body::after {
   color: var(--color-text);
   display: grid;
   gap: clamp(10px, 1.5vw + 6px, 18px);
-  backdrop-filter: blur(var(--blur-medium)) saturate(170%);
   box-shadow: var(--shadow-md),
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
   position: relative;
