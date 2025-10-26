@@ -327,38 +327,6 @@ body::after {
   border-color: rgba(143, 155, 255, 0.65);
 }
 
-.topbar__logo::before {
-  content: "";
-  position: absolute;
-  inset: -50%;
-  background: conic-gradient(
-    from 0deg,
-    transparent,
-    rgba(46, 249, 255, 0.3),
-    transparent 30%
-  );
-  animation: logo-spin 4s linear infinite;
-}
-
-.topbar__logo::after {
-  content: "";
-  position: absolute;
-  inset: 2px;
-  border-radius: inherit;
-  background: linear-gradient(
-    145deg,
-    rgba(255, 255, 255, 0.12),
-    transparent 60%
-  );
-  mix-blend-mode: soft-light;
-}
-
-@keyframes logo-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 .topbar__label {
   margin: 0;
   padding: 0 0 4px 0;
@@ -374,7 +342,7 @@ body::after {
 .topbar__label code {
   padding: clamp(3px, 0.5vw, 5px) clamp(6px, 1vw, 10px);
   border-radius: clamp(4px, 0.8vw, 8px);
-  border: 1px solid rgba(122, 138, 255, 0.35);
+  border: 1px solid rgb(122, 137, 255);
   font-family: var(--font-mono);
   letter-spacing: 0.03em;
   font-size: 0.95em;
@@ -472,22 +440,6 @@ body::after {
   transition: opacity var(--transition);
 }
 
-.topbar__button::after {
-  content: "";
-  position: absolute;
-  inset: -50%;
-  background: conic-gradient(
-    from 0deg,
-    transparent,
-    rgba(46, 249, 255, 0.4),
-    transparent 30%
-  );
-  opacity: 0;
-  transition: opacity var(--transition-smooth);
-  animation: button-spin 3s linear infinite;
-  animation-play-state: paused;
-}
-
 .topbar__button:hover,
 .topbar__button:focus-visible {
   transform: translateY(-3px) scale(1.03);
@@ -503,11 +455,6 @@ body::after {
   opacity: 1;
 }
 
-.topbar__button:hover::after {
-  opacity: 1;
-  animation-play-state: running;
-}
-
 .topbar__button:active {
   transform: translateY(-1px) scale(1.01);
 }
@@ -516,12 +463,6 @@ body::after {
   outline: none;
   box-shadow: 0 0 0 3px rgba(46, 249, 255, 0.25),
     0 0 0 6px rgba(122, 138, 255, 0.15);
-}
-
-@keyframes button-spin {
-  to {
-    transform: rotate(360deg);
-  }
 }
 
 .main {
@@ -631,33 +572,6 @@ body::after {
   will-change: transform;
 }
 
-.chat-card__logo::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: conic-gradient(
-    from 0deg,
-    transparent,
-    rgba(46, 249, 255, 0.35),
-    transparent 30%
-  );
-  animation: logo-spin 3.5s linear infinite;
-  will-change: transform;
-}
-
-.chat-card__logo::after {
-  content: "";
-  position: absolute;
-  inset: 3px;
-  border-radius: inherit;
-  background: linear-gradient(
-    148deg,
-    rgba(255, 255, 255, 0.14),
-    transparent 65%
-  );
-  mix-blend-mode: soft-light;
-}
-
 #chat-title {
   margin: 0;
   font-size: clamp(1.04rem, 1.5vw + 0.8rem, 1.22rem);
@@ -711,22 +625,6 @@ body::after {
   );
   opacity: 0;
   transition: opacity var(--transition);
-}
-
-.chat-card__badge::after {
-  content: "";
-  position: absolute;
-  inset: -50%;
-  background: conic-gradient(
-    from 0deg,
-    transparent,
-    rgba(46, 249, 255, 0.5),
-    transparent 30%
-  );
-  opacity: 0;
-  transition: opacity var(--transition-smooth);
-  animation: button-spin 3s linear infinite;
-  animation-play-state: paused;
 }
 
 .chat-card__badge:hover::before {
@@ -856,33 +754,6 @@ body::after {
   transition: all var(--transition-smooth);
   will-change: transform;
   flex-shrink: 0;
-}
-
-.chat-message__avatar::before {
-  content: "";
-  position: absolute;
-  inset: -100%;
-  background: conic-gradient(
-    from 0deg,
-    transparent,
-    rgba(46, 249, 255, 0.3),
-    transparent 30%
-  );
-  opacity: 0;
-  transition: opacity var(--transition);
-  animation: avatar-spin 3s linear infinite;
-  animation-play-state: paused;
-}
-
-.chat-message__avatar:hover::before {
-  opacity: 1;
-  animation-play-state: running;
-}
-
-@keyframes avatar-spin {
-  to {
-    transform: rotate(360deg);
-  }
 }
 
 .chat-message__content {
@@ -1286,22 +1157,6 @@ body::after {
   transition: opacity var(--transition);
 }
 
-.chat-form__button::after {
-  content: "";
-  position: absolute;
-  inset: -50%;
-  background: conic-gradient(
-    from 0deg,
-    transparent,
-    rgba(46, 249, 255, 0.6),
-    transparent 30%
-  );
-  opacity: 0;
-  transition: opacity var(--transition-smooth);
-  animation: button-spin 3s linear infinite;
-  animation-play-state: paused;
-}
-
 .chat-form__button:not(:disabled):hover {
   transform: translateY(-3px) scale(1.03);
   box-shadow: 0 clamp(12px, 2vw, 22px) clamp(24px, 3vw, 42px)
@@ -1313,11 +1168,6 @@ body::after {
 
 .chat-form__button:not(:disabled):hover::before {
   opacity: 1;
-}
-
-.chat-form__button:not(:disabled):hover::after {
-  opacity: 1;
-  animation-play-state: running;
 }
 
 .chat-form__button:not(:disabled):active {
@@ -1403,22 +1253,6 @@ body::after {
   transition: opacity var(--transition);
 }
 
-.suggestions__item::after {
-  content: "";
-  position: absolute;
-  inset: -50%;
-  background: conic-gradient(
-    from 0deg,
-    transparent,
-    rgba(46, 249, 255, 0.35),
-    transparent 30%
-  );
-  opacity: 0;
-  transition: opacity var(--transition-smooth);
-  animation: suggestion-spin 3s linear infinite;
-  animation-play-state: paused;
-}
-
 .suggestions__item:hover,
 .suggestions__item:focus-visible {
   background-position: 100% 50%;
@@ -1440,19 +1274,8 @@ body::after {
   opacity: 1;
 }
 
-.suggestions__item:hover::after {
-  opacity: 1;
-  animation-play-state: running;
-}
-
 .suggestions__item:active {
   transform: translateY(-1px) scale(1.01);
-}
-
-@keyframes suggestion-spin {
-  to {
-    transform: rotate(360deg);
-  }
 }
 
 .footer {
@@ -1657,9 +1480,9 @@ body::after {
   }
 
   .chat-message__avatar {
-    width: 20px;
-    height: 20px;
-    font-size: 10px;
+    width: 12px;
+    height: 12px;
+    font-size: 6px;
   }
 
   .chat-message__content {
