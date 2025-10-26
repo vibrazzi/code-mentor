@@ -112,16 +112,27 @@
                 </div>
               </div>
             </div>
-            <div
-              class="typing-indicator"
-              id="typingIndicator"
-              role="status"
-              aria-live="polite"
-            >
-              <span class="typing-indicator__dot"></span>
-              <span class="typing-indicator__dot"></span>
-              <span class="typing-indicator__dot"></span>
-              <span class="typing-indicator__label">Ensinar…</span>
+            <div class="typing-container">
+              <div
+                class="typing-indicator"
+                id="typingIndicator"
+                role="status"
+                aria-live="polite"
+              >
+                <span class="typing-indicator__dot"></span>
+                <span class="typing-indicator__dot"></span>
+                <span class="typing-indicator__dot"></span>
+                <span class="typing-indicator__label">Ensinar…</span>
+              </div>
+              <div class="spacer"></div>
+              <button
+                id="clearChatButton"
+                class="clear-chat-button"
+                type="button"
+                title="Limpar conversa e recomeçar"
+              >
+                Limpar
+              </button>
             </div>
           </div>
 
@@ -231,6 +242,39 @@
           ⚡ Ultra-rápido (~300ms) • 🎯 Lógica de Programação • 🐍 Python
         </p>
       </footer>
+
+      <div
+        id="clearModal"
+        class="modal"
+        role="dialog"
+        aria-labelledby="modalTitle"
+        aria-describedby="modalMessage"
+        aria-hidden="true"
+      >
+        <div class="modal__overlay"></div>
+        <div class="modal__content">
+          <h2 id="modalTitle" class="modal__title">Confirmar limpeza</h2>
+          <p id="modalMessage" class="modal__message">
+            Deseja limpar toda a conversa e recomeçar?
+          </p>
+          <div class="modal__actions">
+            <button
+              id="modalCancel"
+              class="modal__button modal__button--cancel"
+              type="button"
+            >
+              Cancelar
+            </button>
+            <button
+              id="modalConfirm"
+              class="modal__button modal__button--confirm"
+              type="button"
+            >
+              Limpar
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </body>
 </html>
