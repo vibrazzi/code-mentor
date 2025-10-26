@@ -6,7 +6,7 @@ const typingIndicator = document.getElementById("typingIndicator");
 const suggestionButtons = document.querySelectorAll("[data-example]");
 
 const conversationHistory = [];
-const HISTORY_PAYLOAD_LIMIT = 6;
+const HISTORY_PAYLOAD_LIMIT = 3;
 const HISTORY_STORE_LIMIT = 12;
 
 function setLoading(isLoading) {
@@ -171,14 +171,25 @@ async function sendMessage(message) {
         conversationHistory.push({ role: "assistant", content: accumulatedText });
 
     } catch (error) {
-        if (!accumulatedText.trim()) {
-            assistantMessageElement.remove();
-        }
+        if (assistantMessageElement && messagesContainer.contains(assistantMessageElement)) {
+            assistantMessageElement.className = 'chat-message chat-message--system';
+            const avatar = assistantMessageElement.querySelector('.chat-message__avatar');
+            const errorContent = assistantMessageElement.querySelector('.chat-message__content');
 
-        appendMessage(
-            `❌ Ops! Algo deu errado.\n${error.message}\n\nVerifique se o servidor Ollama está em execução e tente novamente.`,
-            "system",
-        );
+            if (avatar) avatar.textContent = '⚠️';
+            if (errorContent) {
+                errorContent.innerHTML = "";
+                errorContent.appendChild(formatMessageContent(
+                    `❌ Ops! Algo deu errado durante a resposta.\n${error.message}\n\nVerifique a conexão ou o servidor e tente novamente.`,
+                    "system"
+                ));
+            }
+        } else {
+            appendMessage(
+                `❌ Ops! Algo deu errado.\n${error.message}\n\nVerifique se o servidor Ollama está em execução e tente novamente.`,
+                "system",
+            );
+        }
     }
 }
 

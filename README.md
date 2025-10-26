@@ -24,7 +24,7 @@ CodeMentor é um assistente especializado em lógica de programação, construí
 
 - **Objetivo:** oferecer mentoria de lógica de programação em português, com explicações graduais, exemplos em Python e analogias acessíveis.
 - **Modelo base:** `llama-3.1-8b-instant` via **Groq API** (padrão) ou `llama3.2:3b` via Ollama local.
-- **Stack principal:** FastAPI · Groq API · Jinja2 · Vanilla JS · CSS customizado.
+- **Stack principal:** FastAPI · httpx · Groq API · Jinja2 · Vanilla JS · DOMPurify · CSS customizado.
 - **Performance:** Respostas em **~300-500ms** com Groq (vs 10-30s com Ollama local em CPU).
 
 ---
@@ -45,15 +45,16 @@ CodeMentor é um assistente especializado em lógica de programação, construí
 
 ```
 code-mentor/
-├── main.py                # Aplicação FastAPI e integração com Ollama
+├── main.py                # Aplicação FastAPI com streaming SSE
+├── core.py                # Módulo centralizado: config, LLM calls, validação
 ├── static/
 │   ├── css/styles.css     # Tema futurista responsivo
-│   └── js/app.js          # UX do chat (histórico, feedback visual, fetch API)
+│   └── js/app.js          # UX do chat (streaming, histórico, XSS protection)
 ├── templates/index.html   # Template Jinja2 da interface
 ├── chat_terminal.py       # CLI para conversas rápidas (debug)
 ├── tests/test_app.py      # Testes unitários
 ├── Dockerfile             # Build completo com Ollama + aplicação
-├── requirements.txt       # Dependências Python
+├── requirements.txt       # Dependências Python (httpx, fastapi, uvicorn)
 ├── railway.json           # Comando de start para deploy no Railway
 └── README.md
 ```

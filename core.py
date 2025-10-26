@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import os
 from contextlib import asynccontextmanager
-from typing import Dict, List, AsyncIterator
+from typing import Dict, List, AsyncIterator, Literal, overload
 
 import httpx
 from fastapi import HTTPException
@@ -129,6 +129,11 @@ async def shutdown():
         http_client = None
 
 
+@overload
+async def call_groq(messages: List[Dict[str, str]], max_retries: int = 2, stream: Literal[False] = False) -> str: ...
+
+@overload
+async def call_groq(messages: List[Dict[str, str]], max_retries: int = 2, stream: Literal[True] = True) -> AsyncIterator[str]: ...
 
 async def call_groq(messages: List[Dict[str, str]], max_retries: int = 2, stream: bool = False) -> str | AsyncIterator[str]:
     """
@@ -268,6 +273,12 @@ async def _stream_groq_response(payload: dict, headers: dict) -> AsyncIterator[s
                 except json.JSONDecodeError:
                     continue
 
+
+@overload
+async def call_ollama(prompt: str, max_retries: int = 2, stream: Literal[False] = False) -> str: ...
+
+@overload
+async def call_ollama(prompt: str, max_retries: int = 2, stream: Literal[True] = True) -> AsyncIterator[str]: ...
 
 async def call_ollama(prompt: str, max_retries: int = 2, stream: bool = False) -> str | AsyncIterator[str]:
     """
