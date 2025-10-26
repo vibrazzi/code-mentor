@@ -228,12 +228,10 @@ async function sendMessage(message) {
 
     conversationHistory.push({ role: "assistant", content: accumulatedText });
   } catch (error) {
-    // Check if error occurred during streaming (partial balloon exists)
     if (
       assistantMessageElement &&
       messagesContainer.contains(assistantMessageElement)
     ) {
-      // Reuse existing balloon and convert to error message
       assistantMessageElement.className = "chat-message chat-message--system";
       const avatar = assistantMessageElement.querySelector(
         ".chat-message__avatar"
