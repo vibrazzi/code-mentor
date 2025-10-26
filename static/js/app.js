@@ -115,49 +115,58 @@ async function sendMessage(message) {
             const { done, value } = await reader.read();
 
             if (done) {
+                if (buffer.trim()) {
+                    console.warn("Stream terminou com dados restantes no buffer:", buffer);
+                }
                 break;
             }
 
             buffer += decoder.decode(value, { stream: true });
 
-            let newlineIndex;
-            while ((newlineIndex = buffer.indexOf("\n")) !== -1) {
-                const line = buffer.slice(0, newlineIndex).trim();
-                buffer = buffer.slice(newlineIndex + 1);
+            let lines = buffer.split('\n');
+            buffer = lines.pop() || "";
+            for (const line of lines) {
+                const trimmedLine = line.trim();
 
-                if (!line || !line.startsWith("data: ")) {
-                    continue;
-                }
+                if (!trimmedLine) continue;
 
-                const dataStr = line.slice(6);
+                if (trimmedLine.startsWith("data: ")) {
+                    const dataStr = trimmedLine.slice(6).trim();
 
-                if (dataStr === "[DONE]") {
-                    reader.cancel();
-                    break;
-                }
-
-                try {
-                    const data = JSON.parse(dataStr);
-
-                    if (data.error) {
-                        throw new Error(data.error);
+                    if (dataStr === "[DONE]") {
+                        console.log("Stream marked as DONE.");
+                        continue;
                     }
 
-                    if (data.chunk) {
-                        accumulatedText += data.chunk;
+                    if (!dataStr) continue;
 
-                        contentDiv.innerHTML = "";
-                        contentDiv.appendChild(formatMessageContent(accumulatedText, "assistant"));
+                    try {
+                        const data = JSON.parse(dataStr);
 
-                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                        if (data.error) {
+                            console.error("Backend error received via stream:", data);
+                            throw new Error(data.error || "Erro retornado pelo servidor.");
+                        }
+
+                        if (data.chunk) {
+                            accumulatedText += data.chunk;
+                            contentDiv.innerHTML = "";
+                            contentDiv.appendChild(formatMessageContent(accumulatedText, "assistant"));
+                            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                        }
+                    } catch (parseError) {
+                        console.error("Erro ao parsear linha SSE:", trimmedLine, parseError);
+                        console.error("String que falhou:", dataStr);
+                        throw new Error("Erro ao processar dados da resposta.");
                     }
-                } catch (parseError) {
-                    console.warn("Erro ao parsear linha SSE:", line, parseError);
+                } else {
+                    console.warn("Linha SSE inesperada (ignorada):", trimmedLine);
                 }
             }
         }
 
         if (!accumulatedText.trim()) {
+            assistantMessageElement.remove();
             throw new Error("Não recebi nenhum conteúdo do mentor.");
         }
 
