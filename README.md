@@ -176,19 +176,23 @@ docker run --rm \
 | Variável             | Padrão                                | Descrição                               |
 | -------------------- | ------------------------------------- | --------------------------------------- |
 | `OLLAMA_URL`         | `http://localhost:11434/api/generate` | Endpoint da API do Ollama               |
-| `OLLAMA_MODEL`       | `llama3.2:3b`                         | Identificador do modelo                 |
-| `OLLAMA_NUM_PREDICT` | `150`                                 | Limite de tokens gerados                |
-| `OLLAMA_NUM_CTX`     | `512`                                 | Tamanho do contexto                     |
+| `OLLAMA_MODEL`       | `llama3.2:3b`                         | Identificador do modelo (¹)             |
+| `OLLAMA_NUM_PREDICT` | `512`                                 | Limite de tokens gerados (²)            |
+| `OLLAMA_NUM_CTX`     | `2048`                                | Tamanho do contexto (²)                 |
 | `OLLAMA_NUM_THREAD`  | `8`                                   | Threads de inferência (ajuste para CPU) |
 | `OLLAMA_NUM_BATCH`   | `512`                                 | Batch size interno                      |
 | `OLLAMA_TEMPERATURE` | `0.7`                                 | Controle de criatividade                |
 | `OLLAMA_TOP_P`       | `0.9`                                 | Nucleus sampling                        |
 
+> **(¹) Nota sobre OLLAMA_MODEL**: Este valor está definido em múltiplos lugares (core.py, Dockerfile, deploy/ollama/Dockerfile, deploy/ollama/entrypoint.sh) para garantir consistência em diferentes ambientes. A variável de ambiente sempre sobrescreve os padrões do código.
+
+> **(²) Ajustado para respostas completas**: `NUM_PREDICT` aumentado de 150→512 e `NUM_CTX` de 512→2048 para permitir explicações didáticas completas sem cortes.
+
 ### Variáveis Gerais
 
 | Variável                  | Padrão | Descrição                          |
 | ------------------------- | ------ | ---------------------------------- |
-| `REQUEST_TIMEOUT_SECONDS` | `60`   | Timeout das requisições (segundos) |
+| `REQUEST_TIMEOUT_SECONDS` | `90`   | Timeout das requisições (segundos) |
 
 **Exemplo Groq:**
 
