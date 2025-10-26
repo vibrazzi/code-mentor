@@ -17,9 +17,7 @@ function setLoading(isLoading) {
     } else {
         typingIndicator.classList.remove("typing-indicator--visible");
         input.removeAttribute("aria-busy");
-        if (input.value.trim().length > 0) {
-            sendButton.disabled = false;
-        }
+        sendButton.disabled = false;
     }
 }
 
