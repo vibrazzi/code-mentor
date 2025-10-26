@@ -27,12 +27,13 @@ function formatMessageContent(text, role) {
     const div = document.createElement("div");
 
     if (role === "assistant" || role === "system") {
-        div.innerHTML = marked.parse(text, {
+        const rawHTML = marked.parse(text, {
             breaks: true,
             gfm: true,
             headerIds: false,
             mangle: false
         });
+        div.innerHTML = DOMPurify.sanitize(rawHTML);
     } else {
         const lines = text.split(/\r?\n/);
         lines.forEach((line, index) => {
@@ -87,6 +88,12 @@ async function sendMessage(message) {
         history: conversationHistory.slice(0, -1).slice(-HISTORY_PAYLOAD_LIMIT),
     };
 
+    const assistantMessageElement = createMessageElement("", "assistant");
+    messagesContainer.appendChild(assistantMessageElement);
+
+    const contentDiv = assistantMessageElement.querySelector(".chat-message__content");
+    let accumulatedText = "";
+
     try {
         const response = await fetch("/api/chat", {
             method: "POST",
@@ -94,22 +101,71 @@ async function sendMessage(message) {
             body: JSON.stringify(payload),
         });
 
-        const data = await response.json();
-
         if (!response.ok) {
+            const data = await response.json();
             const detail = data?.detail ?? "Erro inesperado ao gerar resposta.";
             throw new Error(typeof detail === "string" ? detail : JSON.stringify(detail));
         }
 
-        const assistantMessage = (data?.response ?? "").trim();
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
 
-        if (!assistantMessage) {
+        while (true) {
+            const { done, value } = await reader.read();
+
+            if (done) {
+                break;
+            }
+
+            buffer += decoder.decode(value, { stream: true });
+
+            let newlineIndex;
+            while ((newlineIndex = buffer.indexOf("\n")) !== -1) {
+                const line = buffer.slice(0, newlineIndex).trim();
+                buffer = buffer.slice(newlineIndex + 1);
+
+                if (!line || !line.startsWith("data: ")) {
+                    continue;
+                }
+
+                const dataStr = line.slice(6);
+
+                if (dataStr === "[DONE]") {
+                    reader.cancel();
+                    break;
+                }
+
+                try {
+                    const data = JSON.parse(dataStr);
+
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+
+                    if (data.chunk) {
+                        accumulatedText += data.chunk;
+
+                        contentDiv.innerHTML = "";
+                        contentDiv.appendChild(formatMessageContent(accumulatedText, "assistant"));
+
+                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    }
+                } catch (parseError) {
+                    console.warn("Erro ao parsear linha SSE:", line, parseError);
+                }
+            }
+        }
+
+        if (!accumulatedText.trim()) {
             throw new Error("Não recebi nenhum conteúdo do mentor.");
         }
 
-        conversationHistory.push({ role: "assistant", content: assistantMessage });
-        appendMessage(assistantMessage, "assistant");
+        conversationHistory.push({ role: "assistant", content: accumulatedText });
+
     } catch (error) {
+        assistantMessageElement.remove();
+
         appendMessage(
             `❌ Ops! Algo deu errado.\n${error.message}\n\nVerifique se o servidor Ollama está em execução e tente novamente.`,
             "system",

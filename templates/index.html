@@ -13,6 +13,7 @@
       href="{{ url_for('static', path='css/styles.css') }}"
     />
     <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
     <script defer src="{{ url_for('static', path='js/app.js') }}"></script>
   </head>
   <body>
@@ -84,7 +85,7 @@
             <div class="chat-card__info">
               <span class="chat-card__logo" aria-hidden="true">🦾</span>
               <div>
-                <h2 id="chat-title" style="margin: 0; font-size: clamp(1.04rem, 1.5vw + 0.8rem, 1.22rem); font-weight: 700; letter-spacing: 0.02em;">CodeMentor</h2>
+                <h2 id="chat-title">CodeMentor</h2>
                 <p class="chat-card__subtitle">
                   Mentor de lógica de programação
                 </p>
