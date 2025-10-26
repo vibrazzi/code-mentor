@@ -2,55 +2,39 @@
 Script de chat interativo com CodeMentor via Ollama
 """
 
-import requests
+import asyncio
 import time
 
-OLLAMA_URL = "http://localhost:11434/api/generate"
+from core import PROMPT_SISTEMA, call_ollama
 
-def gerar_resposta_ollama(mensagem, historico=None):
+
+async def gerar_resposta_ollama(mensagem, historico=None):
     """Gera resposta usando Ollama com contexto de conversa"""
 
     if historico is None:
         historico = []
 
-    prompt = f"""Você é o CodeMentor, um experiente mentor de lógica de programação.
+    contexto = "\n".join([
+        f"Usuário: {msg['user']}\nCodeMentor: {msg['assistant']}"
+        for msg in historico[-3:]
+    ])
 
-Sua personalidade:
-- Você é paciente, didático e encorajador
-- Explica conceitos de forma clara e progressiva
-- Usa analogias e exemplos práticos
-- Incentiva o aprendizado ativo
-- Mantém o foco em lógica de programação
+    prompt = f"""{PROMPT_SISTEMA}
 
 Contexto da conversa anterior:
-{chr(10).join([f"Usuário: {msg['user']}{chr(10)}CodeMentor: {msg['assistant']}" for msg in historico[-3:]])}
+{contexto}
 
 Usuário atual: {mensagem}
 
 Responda como CodeMentor, focando em lógica de programação:"""
 
-    payload = {
-        "model": "llama3.2:3b",
-        "prompt": prompt,
-        "stream": False,
-        "options": {
-            "temperature": 0.7,
-            "top_p": 0.9,
-        "num_predict": 300
-        }
-    }
-
     try:
-        response = requests.post(OLLAMA_URL, json=payload, timeout=15)
-        response.raise_for_status()
-
-        data = response.json()
-        resposta = data.get("response", "").strip()
-
+        resposta = await call_ollama(prompt, stream=False)
         return resposta
 
-    except requests.exceptions.RequestException as e:
+    except Exception as e:
         return f"❌ Erro ao conectar com Ollama: {e}"
+
 
 def chat_interativo():
     """Interface de chat interativo no terminal"""
@@ -76,9 +60,7 @@ def chat_interativo():
 
             print("🤔 CodeMentor está pensando...")
 
-            time.sleep(1)
-
-            resposta = gerar_resposta_ollama(mensagem, historico)
+            resposta = asyncio.run(gerar_resposta_ollama(mensagem, historico))
 
             historico.append({"user": mensagem, "assistant": resposta})
 
