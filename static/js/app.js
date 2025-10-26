@@ -173,7 +173,9 @@ async function sendMessage(message) {
         conversationHistory.push({ role: "assistant", content: accumulatedText });
 
     } catch (error) {
-        assistantMessageElement.remove();
+        if (!accumulatedText.trim()) {
+            assistantMessageElement.remove();
+        }
 
         appendMessage(
             `❌ Ops! Algo deu errado.\n${error.message}\n\nVerifique se o servidor Ollama está em execução e tente novamente.`,
