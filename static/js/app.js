@@ -199,7 +199,11 @@ function handleFormSubmit(event) {
 
     sendMessage(message).finally(() => {
         setLoading(false);
-        input.focus();
+        setTimeout(() => {
+            if (input) {
+                input.focus();
+            }
+        }, 10);
     });
 }
 
