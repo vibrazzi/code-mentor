@@ -292,57 +292,19 @@ body::after {
   z-index: 1;
 }
 
-.topbar__logo {
-  display: grid;
-  place-items: center;
-  width: clamp(46px, 6vw + 36px, 64px);
-  height: clamp(46px, 6vw + 36px, 64px);
-  border-radius: clamp(14px, 2vw, 22px);
-  border: 1.5px solid rgba(143, 155, 255, 0.5);
-  background: linear-gradient(
-    148deg,
-    rgba(122, 138, 255, 0.42),
-    rgba(46, 249, 255, 0.35)
-  );
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  font-size: clamp(0.9rem, 1.5vw + 0.7rem, 1.1rem);
-  color: var(--color-text);
-  box-shadow: 0 clamp(12px, 2vw, 20px) clamp(20px, 3vw, 34px)
-      rgba(72, 96, 255, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
-  position: relative;
-  overflow: hidden;
-  transition: transform var(--transition-smooth),
-    box-shadow var(--transition-smooth), border-color var(--transition);
-  will-change: transform;
-}
-
-.topbar__logo:hover {
-  transform: scale(1.08) rotate(2deg);
-  box-shadow: 0 clamp(16px, 2.5vw, 26px) clamp(26px, 4vw, 44px)
-      rgba(72, 96, 255, 0.55),
-    0 0 clamp(16px, 2vw, 26px) rgba(46, 249, 255, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  border-color: rgba(143, 155, 255, 0.65);
-}
-
 .topbar__label {
   margin: 0;
   padding: 0 0 4px 0;
   font-weight: 700;
   letter-spacing: 0.05em;
   font-size: clamp(0.95rem, 1.5vw + 0.7rem, 1.18rem);
-  background: linear-gradient(135deg, var(--color-text), var(--color-accent));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 .topbar__label code {
+  background: rgba(5, 8, 22, 0.8);
   padding: clamp(3px, 0.5vw, 5px) clamp(6px, 1vw, 10px);
   border-radius: clamp(4px, 0.8vw, 8px);
-  border: 1px solid rgb(122, 137, 255);
+  border: 1px solid rgba(122, 138, 255, 0.35);
   font-family: var(--font-mono);
   letter-spacing: 0.03em;
   font-size: 0.95em;
@@ -1480,9 +1442,9 @@ body::after {
   }
 
   .chat-message__avatar {
-    width: 12px;
-    height: 12px;
-    font-size: 6px;
+    width: 20px;
+    height: 20px;
+    font-size: 10px;
   }
 
   .chat-message__content {
