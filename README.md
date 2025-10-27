@@ -1,6 +1,6 @@
 # CodeMentor · IA para Lógica de Programação
 
-CodeMentor é um assistente especializado em lógica de programação, construído com FastAPI e alimentado por **Groq API** (llama-3.1-8b-instant) ou Ollama local. O projeto foi pensado para portfólios profissionais: interface moderna, backend resiliente, respostas ultra-rápidas (~300ms) e pipeline de deploy via Railway.
+CodeMentor é um assistente especializado em lógica de programação, construído com FastAPI e alimentado por **Groq API** (llama-3.1-8b-instant) ou Ollama local. O projeto foi pensado para ajudar nos estudo para quem deseja entrar na área: interface moderna, backend resiliente, respostas ultra-rápidas (~300ms) e pipeline de deploy via Railway.
 
 ---
 
