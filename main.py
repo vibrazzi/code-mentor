@@ -136,6 +136,7 @@ def _build_messages(history: List[ConversationTurn], message: str) -> List[Dict[
     return messages
 
 
+@app.head("/")
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request) -> HTMLResponse:
     """Serve a interface web principal."""
